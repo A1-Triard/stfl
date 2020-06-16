@@ -2,44 +2,14 @@
          non_upper_case_globals, unused_assignments, unused_mut)]
 #![register_tool(c2rust)]
 #![feature(const_raw_ptr_to_usize_cast, extern_types, main, register_tool)]
-use ::c2rust_out::*;
+use c2rust_out::iconv::*;
+use c2rust_out::public::*;
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
     pub type _IO_marker;
-    pub type stfl_form;
-    pub type stfl_ipool;
     #[no_mangle]
     fn wcscmp(_: *const libc::c_int, _: *const libc::c_int) -> libc::c_int;
-    #[no_mangle]
-    fn stfl_set(f: *mut stfl_form, name: *const wchar_t,
-                value: *const wchar_t);
-    #[no_mangle]
-    fn stfl_create(text: *const wchar_t) -> *mut stfl_form;
-    #[no_mangle]
-    fn stfl_free(f: *mut stfl_form);
-    #[no_mangle]
-    fn stfl_run(f: *mut stfl_form, timeout: libc::c_int) -> *const wchar_t;
-    #[no_mangle]
-    fn stfl_redraw();
-    #[no_mangle]
-    fn stfl_reset();
-    #[no_mangle]
-    fn stfl_get(f: *mut stfl_form, name: *const wchar_t) -> *const wchar_t;
-    #[no_mangle]
-    fn stfl_text(f: *mut stfl_form, name: *const wchar_t) -> *const wchar_t;
-    #[no_mangle]
-    fn stfl_ipool_create(code: *const libc::c_char) -> *mut stfl_ipool;
-    #[no_mangle]
-    fn stfl_ipool_towc(pool: *mut stfl_ipool, buf: *const libc::c_char)
-     -> *const wchar_t;
-    #[no_mangle]
-    fn stfl_ipool_fromwc(pool: *mut stfl_ipool, buf: *const wchar_t)
-     -> *const libc::c_char;
-    #[no_mangle]
-    fn stfl_ipool_flush(pool: *mut stfl_ipool);
-    #[no_mangle]
-    fn stfl_ipool_destroy(pool: *mut stfl_ipool);
     #[no_mangle]
     static mut stderr: *mut FILE;
     #[no_mangle]
