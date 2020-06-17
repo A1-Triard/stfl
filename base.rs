@@ -318,13 +318,13 @@ pub struct stfl_kv {
 }
 
 #[inline]
-unsafe extern "C" fn compat_wcsdup(mut src: *const wchar_t) -> *mut wchar_t {
-    let mut n: size_t =
+unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
+    let n: size_t =
         wcslen(src).wrapping_add(1 as c_int as
                                      c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
                                                                      as
                                                                      c_ulong);
-    let mut dest: *mut wchar_t = malloc(n) as *mut wchar_t;
+    let dest: *mut wchar_t = malloc(n) as *mut wchar_t;
     memcpy(dest as *mut c_void, src as *const c_void, n);
     return dest;
 }
@@ -363,14 +363,13 @@ pub static mut curses_active: c_int = 0 as c_int;
 #[no_mangle]
 pub unsafe extern "C" fn stfl_widget_new(mut type_0: *const wchar_t)
  -> *mut stfl_widget {
-    let mut t: *mut stfl_widget_type = 0 as *mut stfl_widget_type;
     let mut setfocus: c_int = 0 as c_int;
-    let mut i: c_int = 0;
     while *type_0 == '!' as i32 {
         setfocus = 1 as c_int;
         type_0 = type_0.offset(1)
     }
-    i = 0 as c_int;
+    let mut i = 0 as c_int;
+    let mut t;
     loop  {
         t = stfl_widget_types[i as usize];
         if t.is_null() { break ; }
@@ -399,7 +398,7 @@ pub unsafe extern "C" fn stfl_widget_free(mut w: *mut stfl_widget) {
     }
     let mut kv: *mut stfl_kv = (*w).kv_list;
     while !kv.is_null() {
-        let mut next: *mut stfl_kv = (*kv).next;
+        let next: *mut stfl_kv = (*kv).next;
         free((*kv).key as *mut c_void);
         free((*kv).value as *mut c_void);
         if !(*kv).name.is_null() { free((*kv).name as *mut c_void); }
@@ -424,9 +423,9 @@ pub unsafe extern "C" fn stfl_widget_free(mut w: *mut stfl_widget) {
     free(w as *mut c_void);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_widget_setkv_int(mut w: *mut stfl_widget,
-                                               mut key: *const wchar_t,
-                                               mut value: c_int)
+pub unsafe extern "C" fn stfl_widget_setkv_int(w: *mut stfl_widget,
+                                               key: *const wchar_t,
+                                               value: c_int)
  -> *mut stfl_kv {
     let mut newtext: [wchar_t; 64] = [0; 64];
     swprintf(newtext.as_mut_ptr(), 64 as c_int as size_t,
@@ -437,8 +436,8 @@ pub unsafe extern "C" fn stfl_widget_setkv_int(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_widget_setkv_str(mut w: *mut stfl_widget,
-                                               mut key: *const wchar_t,
-                                               mut value: *const wchar_t)
+                                               key: *const wchar_t,
+                                               value: *const wchar_t)
  -> *mut stfl_kv {
     let mut kv: *mut stfl_kv = (*w).kv_list;
     while !kv.is_null() {
@@ -463,9 +462,9 @@ pub unsafe extern "C" fn stfl_widget_setkv_str(mut w: *mut stfl_widget,
     return kv;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_setkv_by_name_int(mut w: *mut stfl_widget,
-                                                mut name: *const wchar_t,
-                                                mut value: c_int)
+pub unsafe extern "C" fn stfl_setkv_by_name_int(w: *mut stfl_widget,
+                                                name: *const wchar_t,
+                                                value: c_int)
  -> *mut stfl_kv {
     let mut newtext: [wchar_t; 64] = [0; 64];
     swprintf(newtext.as_mut_ptr(), 64 as c_int as size_t,
@@ -475,18 +474,18 @@ pub unsafe extern "C" fn stfl_setkv_by_name_int(mut w: *mut stfl_widget,
     return stfl_setkv_by_name_str(w, name, newtext.as_mut_ptr());
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_setkv_by_name_str(mut w: *mut stfl_widget,
-                                                mut name: *const wchar_t,
-                                                mut value: *const wchar_t)
+pub unsafe extern "C" fn stfl_setkv_by_name_str(w: *mut stfl_widget,
+                                                name: *const wchar_t,
+                                                value: *const wchar_t)
  -> *mut stfl_kv {
-    let mut kv: *mut stfl_kv = stfl_kv_by_name(w, name);
+    let kv: *mut stfl_kv = stfl_kv_by_name(w, name);
     if kv.is_null() { return 0 as *mut stfl_kv }
     free((*kv).value as *mut c_void);
     (*kv).value = compat_wcsdup(value);
     return kv;
 }
-unsafe extern "C" fn stfl_widget_getkv_worker(mut w: *mut stfl_widget,
-                                              mut key: *const wchar_t)
+unsafe extern "C" fn stfl_widget_getkv_worker(w: *mut stfl_widget,
+                                              key: *const wchar_t)
  -> *mut stfl_kv {
     let mut kv: *mut stfl_kv = (*w).kv_list;
     while !kv.is_null() {
@@ -497,16 +496,16 @@ unsafe extern "C" fn stfl_widget_getkv_worker(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_widget_getkv(mut w: *mut stfl_widget,
-                                           mut key: *const wchar_t)
+                                           key: *const wchar_t)
  -> *mut stfl_kv {
     let mut kv: *mut stfl_kv = stfl_widget_getkv_worker(w, key);
     if !kv.is_null() { return kv }
-    let mut key1_len: c_int =
+    let key1_len: c_int =
         wcslen(key).wrapping_add(2 as c_int as c_ulong) as
             c_int;
     let vla = key1_len as usize;
     let mut key1: Vec<wchar_t> = ::std::vec::from_elem(0, vla);
-    let mut key2_len: c_int =
+    let key2_len: c_int =
         (key1_len as
              c_ulong).wrapping_add(wcslen((*(*w).type_0).name)).wrapping_add(1
                                                                                        as
@@ -516,7 +515,7 @@ pub unsafe extern "C" fn stfl_widget_getkv(mut w: *mut stfl_widget,
             as c_int;
     let vla_0 = key2_len as usize;
     let mut key2: Vec<wchar_t> = ::std::vec::from_elem(0, vla_0);
-    let mut key3_len: c_int =
+    let key3_len: c_int =
         if !(*w).cls.is_null() {
             (key1_len as
                  c_ulong).wrapping_add(wcslen((*w).cls)).wrapping_add(1
@@ -555,11 +554,11 @@ pub unsafe extern "C" fn stfl_widget_getkv(mut w: *mut stfl_widget,
     return 0 as *mut stfl_kv;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_widget_getkv_int(mut w: *mut stfl_widget,
-                                               mut key: *const wchar_t,
-                                               mut defval: c_int)
+pub unsafe extern "C" fn stfl_widget_getkv_int(w: *mut stfl_widget,
+                                               key: *const wchar_t,
+                                               defval: c_int)
  -> c_int {
-    let mut kv: *mut stfl_kv = stfl_widget_getkv(w, key);
+    let kv: *mut stfl_kv = stfl_widget_getkv(w, key);
     let mut ret: c_int = 0;
     if kv.is_null() || *(*kv).value.offset(0 as c_int as isize) == 0 {
         return defval
@@ -573,19 +572,19 @@ pub unsafe extern "C" fn stfl_widget_getkv_int(mut w: *mut stfl_widget,
     return ret;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_widget_getkv_str(mut w: *mut stfl_widget,
-                                               mut key: *const wchar_t,
-                                               mut defval: *const wchar_t)
+pub unsafe extern "C" fn stfl_widget_getkv_str(w: *mut stfl_widget,
+                                               key: *const wchar_t,
+                                               defval: *const wchar_t)
  -> *const wchar_t {
-    let mut kv: *mut stfl_kv = stfl_widget_getkv(w, key);
+    let kv: *mut stfl_kv = stfl_widget_getkv(w, key);
     return if !kv.is_null() { (*kv).value } else { defval };
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_getkv_by_name_int(mut w: *mut stfl_widget,
-                                                mut name: *const wchar_t,
-                                                mut defval: c_int)
+pub unsafe extern "C" fn stfl_getkv_by_name_int(w: *mut stfl_widget,
+                                                name: *const wchar_t,
+                                                defval: c_int)
  -> c_int {
-    let mut kv: *mut stfl_kv = stfl_kv_by_name(w, name);
+    let kv: *mut stfl_kv = stfl_kv_by_name(w, name);
     let mut ret: c_int = 0;
     if kv.is_null() || *(*kv).value.offset(0 as c_int as isize) == 0 {
         return defval
@@ -599,21 +598,21 @@ pub unsafe extern "C" fn stfl_getkv_by_name_int(mut w: *mut stfl_widget,
     return ret;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_getkv_by_name_str(mut w: *mut stfl_widget,
-                                                mut name: *const wchar_t,
-                                                mut defval: *const wchar_t)
+pub unsafe extern "C" fn stfl_getkv_by_name_str(w: *mut stfl_widget,
+                                                name: *const wchar_t,
+                                                defval: *const wchar_t)
  -> *const wchar_t {
-    let mut kv: *mut stfl_kv = stfl_kv_by_name(w, name);
+    let kv: *mut stfl_kv = stfl_kv_by_name(w, name);
     return if !kv.is_null() { (*kv).value } else { defval };
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_widget_by_name(mut w: *mut stfl_widget,
-                                             mut name: *const wchar_t)
+                                             name: *const wchar_t)
  -> *mut stfl_widget {
     if !(*w).name.is_null() && wcscmp((*w).name, name) == 0 { return w }
     w = (*w).first_child;
     while !w.is_null() {
-        let mut r: *mut stfl_widget = stfl_widget_by_name(w, name);
+        let r: *mut stfl_widget = stfl_widget_by_name(w, name);
         if !r.is_null() { return r }
         w = (*w).next_sibling
     }
@@ -621,12 +620,12 @@ pub unsafe extern "C" fn stfl_widget_by_name(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_widget_by_id(mut w: *mut stfl_widget,
-                                           mut id: c_int)
+                                           id: c_int)
  -> *mut stfl_widget {
     if (*w).id == id { return w }
     w = (*w).first_child;
     while !w.is_null() {
-        let mut r: *mut stfl_widget = stfl_widget_by_id(w, id);
+        let r: *mut stfl_widget = stfl_widget_by_id(w, id);
         if !r.is_null() { return r }
         w = (*w).next_sibling
     }
@@ -634,7 +633,7 @@ pub unsafe extern "C" fn stfl_widget_by_id(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_kv_by_name(mut w: *mut stfl_widget,
-                                         mut name: *const wchar_t)
+                                         name: *const wchar_t)
  -> *mut stfl_kv {
     let mut kv: *mut stfl_kv = (*w).kv_list;
     while !kv.is_null() {
@@ -645,7 +644,7 @@ pub unsafe extern "C" fn stfl_kv_by_name(mut w: *mut stfl_widget,
     }
     w = (*w).first_child;
     while !w.is_null() {
-        let mut r: *mut stfl_kv = stfl_kv_by_name(w, name);
+        let r: *mut stfl_kv = stfl_kv_by_name(w, name);
         if !r.is_null() { return r }
         w = (*w).next_sibling
     }
@@ -653,26 +652,26 @@ pub unsafe extern "C" fn stfl_kv_by_name(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_kv_by_id(mut w: *mut stfl_widget,
-                                       mut id: c_int) -> *mut stfl_kv {
+                                       id: c_int) -> *mut stfl_kv {
     let mut kv: *mut stfl_kv = (*w).kv_list;
     while !kv.is_null() { if (*kv).id == id { return kv } kv = (*kv).next }
     w = (*w).first_child;
     while !w.is_null() {
-        let mut r: *mut stfl_kv = stfl_kv_by_id(w, id);
+        let r: *mut stfl_kv = stfl_kv_by_id(w, id);
         if !r.is_null() { return r }
         w = (*w).next_sibling
     }
     return 0 as *mut stfl_kv;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_find_child_tree(mut w: *mut stfl_widget,
+pub unsafe extern "C" fn stfl_find_child_tree(w: *mut stfl_widget,
                                               mut c: *mut stfl_widget)
  -> *mut stfl_widget {
     while !c.is_null() { if (*c).parent == w { return c } c = (*c).parent }
     return 0 as *mut stfl_widget;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_find_first_focusable(mut w: *mut stfl_widget)
+pub unsafe extern "C" fn stfl_find_first_focusable(w: *mut stfl_widget)
  -> *mut stfl_widget {
     if (*w).allow_focus != 0 &&
            stfl_widget_getkv_int(w,
@@ -691,7 +690,7 @@ pub unsafe extern "C" fn stfl_find_first_focusable(mut w: *mut stfl_widget)
                                  (*::std::mem::transmute::<&[u8; 36],
                                                            &[c_int; 9]>(b".\x00\x00\x00d\x00\x00\x00i\x00\x00\x00s\x00\x00\x00p\x00\x00\x00l\x00\x00\x00a\x00\x00\x00y\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
                                  1 as c_int) != 0 {
-            let mut r: *mut stfl_widget = stfl_find_first_focusable(c);
+            let r: *mut stfl_widget = stfl_find_first_focusable(c);
             if !r.is_null() { return r }
         }
         c = (*c).next_sibling
@@ -699,8 +698,8 @@ pub unsafe extern "C" fn stfl_find_first_focusable(mut w: *mut stfl_widget)
     return 0 as *mut stfl_widget;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_focus_prev(mut w: *mut stfl_widget,
-                                         mut old_fw: *mut stfl_widget,
+pub unsafe extern "C" fn stfl_focus_prev(w: *mut stfl_widget,
+                                         old_fw: *mut stfl_widget,
                                          mut f: *mut stfl_form)
  -> c_int {
     let mut stop: *mut stfl_widget = stfl_find_child_tree(w, old_fw);
@@ -715,7 +714,7 @@ pub unsafe extern "C" fn stfl_focus_prev(mut w: *mut stfl_widget,
     while (*w).first_child != stop {
         let mut c: *mut stfl_widget = (*w).first_child;
         while (*c).next_sibling != stop { c = (*c).next_sibling }
-        let mut new_fw: *mut stfl_widget = stfl_find_first_focusable(c);
+        let new_fw: *mut stfl_widget = stfl_find_first_focusable(c);
         if !new_fw.is_null() {
             if (*(*old_fw).type_0).f_leave.is_some() {
                 (*(*old_fw).type_0).f_leave.expect("non-null function pointer")(old_fw,
@@ -733,8 +732,8 @@ pub unsafe extern "C" fn stfl_focus_prev(mut w: *mut stfl_widget,
     return 0 as c_int;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_focus_next(mut w: *mut stfl_widget,
-                                         mut old_fw: *mut stfl_widget,
+pub unsafe extern "C" fn stfl_focus_next(w: *mut stfl_widget,
+                                         old_fw: *mut stfl_widget,
                                          mut f: *mut stfl_form)
  -> c_int {
     let mut c: *mut stfl_widget = stfl_find_child_tree(w, old_fw);
@@ -748,7 +747,7 @@ pub unsafe extern "C" fn stfl_focus_next(mut w: *mut stfl_widget,
     }
     c = (*c).next_sibling;
     while !c.is_null() {
-        let mut new_fw: *mut stfl_widget = stfl_find_first_focusable(c);
+        let new_fw: *mut stfl_widget = stfl_find_first_focusable(c);
         if !new_fw.is_null() {
             if (*(*old_fw).type_0).f_leave.is_some() {
                 (*(*old_fw).type_0).f_leave.expect("non-null function pointer")(old_fw,
@@ -767,7 +766,7 @@ pub unsafe extern "C" fn stfl_focus_next(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_switch_focus(mut old_fw: *mut stfl_widget,
-                                           mut new_fw: *mut stfl_widget,
+                                           new_fw: *mut stfl_widget,
                                            mut f: *mut stfl_form)
  -> c_int {
     if new_fw.is_null() || (*new_fw).allow_focus == 0 {
@@ -789,7 +788,7 @@ pub unsafe extern "C" fn stfl_switch_focus(mut old_fw: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_form_new() -> *mut stfl_form {
-    let mut f: *mut stfl_form =
+    let f: *mut stfl_form =
         calloc(1 as c_int as c_ulong,
                ::std::mem::size_of::<stfl_form>() as c_ulong) as
             *mut stfl_form;
@@ -799,8 +798,8 @@ pub unsafe extern "C" fn stfl_form_new() -> *mut stfl_form {
     return f;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_form_event(mut f: *mut stfl_form,
-                                         mut event: *mut wchar_t) {
+pub unsafe extern "C" fn stfl_form_event(f: *mut stfl_form,
+                                         event: *mut wchar_t) {
     let mut ep: *mut *mut stfl_event = &mut (*f).event_queue;
     let mut e: *mut stfl_event =
         calloc(1 as c_int as c_ulong,
@@ -810,7 +809,7 @@ pub unsafe extern "C" fn stfl_form_event(mut f: *mut stfl_form,
     while !(*ep).is_null() { ep = &mut (**ep).next }
     *ep = e;
 }
-unsafe extern "C" fn stfl_gather_focus_widget(mut f: *mut stfl_form)
+unsafe extern "C" fn stfl_gather_focus_widget(f: *mut stfl_form)
  -> *mut stfl_widget {
     let mut fw: *mut stfl_widget =
         stfl_widget_by_id((*f).root, (*f).current_focus_id);
@@ -824,14 +823,8 @@ unsafe extern "C" fn stfl_gather_focus_widget(mut f: *mut stfl_form)
     return fw;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
-                                       mut timeout: c_int) {
-    let mut fw: *mut stfl_widget = 0 as *mut stfl_widget;
-    let mut wch: wint_t = 0;
-    let mut rc: c_int = 0;
-    let mut w: *mut stfl_widget = 0 as *mut stfl_widget;
-    let mut on_event: *mut wchar_t = 0 as *mut wchar_t;
-    let mut on_handler_len: c_int = 0;
+pub unsafe extern "C" fn stfl_form_run(f: *mut stfl_form,
+                                       timeout: c_int) {
     let mut current_block: u64;
     let mut on_handler: *mut wchar_t = 0 as *mut wchar_t;
     pthread_mutex_lock(&mut (*f).mtx);
@@ -855,39 +848,20 @@ pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
                 start_color();
                 use_default_colors();
                 wbkgdset(stdscr, ' ' as i32 as chtype);
-                curses_active = 1 as c_int
+                curses_active = 1
             }
-            stfl_colorpair_counter = 1 as c_int;
-            (*(*(*f).root).type_0).f_prepare.expect("non-null function pointer")((*f).root,
-                                                                                 f);
-            fw = stfl_gather_focus_widget(f);
-            (*f).current_focus_id =
-                if !fw.is_null() { (*fw).id } else { 0 as c_int };
-            (*(*f).root).y =
-                (if !(stdscr as *const c_void).is_null() {
-                     (*stdscr)._begy as c_int
-                 } else { -(1 as c_int) });
-            (*(*f).root).x =
-                (if !(stdscr as *const c_void).is_null() {
-                     (*stdscr)._begx as c_int
-                 } else { -(1 as c_int) });
-            (*(*f).root).h =
-                (if !(stdscr as *const c_void).is_null() {
-                     ((*stdscr)._maxy as c_int) + 1 as c_int
-                 } else { -(1 as c_int) });
-            (*(*f).root).w =
-                (if !(stdscr as *const c_void).is_null() {
-                     ((*stdscr)._maxx as c_int) + 1 as c_int
-                 } else { -(1 as c_int) });
-            if timeout == -(3 as c_int) {
-                let mut dummywin: *mut WINDOW =
-                    newwin(0 as c_int, 0 as c_int,
-                           0 as c_int, 0 as c_int);
+            stfl_colorpair_counter = 1;
+            (*(*(*f).root).type_0).f_prepare.expect("non-null function pointer")((*f).root, f);
+            let mut fw = stfl_gather_focus_widget(f);
+            (*f).current_focus_id = if !fw.is_null() { (*fw).id } else { 0 };
+            (*(*f).root).y = if !stdscr.is_null() { (*stdscr)._begy as c_int } else { -1 };
+            (*(*f).root).x = if !stdscr.is_null() { (*stdscr)._begx as c_int } else { -1 };
+            (*(*f).root).h = if !stdscr.is_null() { ((*stdscr)._maxy as c_int) + 1 } else { -1 };
+            (*(*f).root).w = if !stdscr.is_null() { ((*stdscr)._maxx as c_int) + 1 } else { -1 };
+            if timeout == -3 {
+                let dummywin: *mut WINDOW = newwin(0, 0, 0, 0);
                 if dummywin.is_null() {
-                    fprintf(stderr,
-                            b"STFL Fatal Error: stfl_form_run() got a NULL pointer from newwin(0, 0, 0, 0).\n\x00"
-                                as *const u8 as *const c_char);
-                    abort();
+                    panic!("STFL Fatal Error: stfl_form_run() got a NULL pointer from newwin(0, 0, 0, 0).");
                 }
                 (*(*(*f).root).type_0).f_draw.expect("non-null function pointer")((*f).root,
                                                                                   f,
@@ -900,9 +874,9 @@ pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
             (*(*(*f).root).type_0).f_draw.expect("non-null function pointer")((*f).root,
                                                                               f,
                                                                               stdscr);
-            if timeout == -(1 as c_int) &&
-                   (*(*f).root).cur_y != -(1 as c_int) &&
-                   (*(*f).root).cur_x != -(1 as c_int) {
+            if timeout == -1 &&
+                   (*(*f).root).cur_y != -1 &&
+                   (*(*f).root).cur_x != -1 {
                 wmove(stdscr, (*(*f).root).cur_y, (*(*f).root).cur_x);
             }
             wrefresh(stdscr);
@@ -912,27 +886,27 @@ pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
             }
             wtimeout(stdscr,
                      if timeout == 0 as c_int {
-                         -(1 as c_int)
+                         -1
                      } else { timeout });
             wmove(stdscr, (*f).cursor_y, (*f).cursor_x);
-            wch = 0;
+            let mut wch = 0;
             pthread_mutex_unlock(&mut (*f).mtx);
-            rc = wget_wch(stdscr, &mut wch);
+            let rc = wget_wch(stdscr, &mut wch);
             pthread_mutex_lock(&mut (*f).mtx);
             /* fw may be invalid, regather it */
             fw = stfl_gather_focus_widget(f);
             (*f).current_focus_id =
                 if !fw.is_null() { (*fw).id } else { 0 as c_int };
-            w = fw;
-            if rc == -(1 as c_int) {
+            let mut w = fw;
+            if rc == -1 {
                 stfl_form_event(f,
                                 compat_wcsdup((*::std::mem::transmute::<&[u8; 32],
                                                                         &[c_int; 8]>(b"T\x00\x00\x00I\x00\x00\x00M\x00\x00\x00E\x00\x00\x00O\x00\x00\x00U\x00\x00\x00T\x00\x00\x00\x00\x00\x00\x00")).as_ptr()));
             } else {
-                on_event =
+                let on_event =
                     stfl_keyname(wch as wchar_t,
                                  (rc == 0o400 as c_int) as c_int);
-                on_handler_len =
+                let on_handler_len =
                     wcslen(on_event).wrapping_add(4 as c_int as
                                                       c_ulong) as
                         c_int;
@@ -952,7 +926,7 @@ pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
                         current_block = 1623252117315916725;
                         break ;
                     }
-                    let mut event: *const wchar_t =
+                    let event: *const wchar_t =
                         stfl_widget_getkv_str(w, on_handler,
                                               0 as *const wchar_t);
                     if !event.is_null() {
@@ -1002,7 +976,7 @@ pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
                                     fw =
                                         stfl_widget_by_id((*f).root,
                                                           (*f).current_focus_id);
-                                    let mut old_fw: *mut stfl_widget = fw;
+                                    let old_fw: *mut stfl_widget = fw;
                                     if fw.is_null() {
                                         current_block = 4896165486537497759;
                                     } else {
@@ -1158,7 +1132,7 @@ pub unsafe extern "C" fn stfl_form_run(mut f: *mut stfl_form,
             }
         }
     }
-    let mut e: *mut stfl_event = (*f).event_queue;
+    let e: *mut stfl_event = (*f).event_queue;
     if !e.is_null() {
         (*f).event_queue = (*e).next;
         (*f).event = (*e).event;
@@ -1176,7 +1150,7 @@ pub unsafe extern "C" fn stfl_form_redraw() {
     if curses_active != 0 { clearok(curscr, 1 as c_int != 0); };
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_form_free(mut f: *mut stfl_form) {
+pub unsafe extern "C" fn stfl_form_free(f: *mut stfl_form) {
     pthread_mutex_lock(&mut (*f).mtx);
     if !(*f).root.is_null() { stfl_widget_free((*f).root); }
     if !(*f).event.is_null() { free((*f).event as *mut c_void); }
@@ -1210,30 +1184,30 @@ unsafe extern "C" fn compute_len_from_width(mut p: *const wchar_t,
     return len;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_print_richtext(mut w: *mut stfl_widget,
-                                             mut win: *mut WINDOW,
-                                             mut y: c_uint,
+pub unsafe extern "C" fn stfl_print_richtext(w: *mut stfl_widget,
+                                             win: *mut WINDOW,
+                                             y: c_uint,
                                              mut x: c_uint,
-                                             mut text: *const wchar_t,
-                                             mut width: c_uint,
-                                             mut style_normal: *const wchar_t,
-                                             mut has_focus: c_int)
+                                             text: *const wchar_t,
+                                             width: c_uint,
+                                             style_normal: *const wchar_t,
+                                             has_focus: c_int)
  -> c_uint {
     let mut p: *const wchar_t = text;
     let mut retval: c_uint = 0 as c_int as c_uint;
-    let mut end_col: c_uint = x.wrapping_add(width);
+    let end_col: c_uint = x.wrapping_add(width);
     while *p != 0 {
         let mut len: c_uint =
             compute_len_from_width(p, end_col.wrapping_sub(x));
-        let mut p1: *const wchar_t = wcschr(p, '<' as i32);
+        let p1: *const wchar_t = wcschr(p, '<' as i32);
         if p1.is_null() {
             if wmove(win, y as c_int, x as c_int) ==
-                   -(1 as c_int) {
+                   -1 {
             } else { waddnwstr(win, p, len as c_int); };
             retval = retval.wrapping_add(len);
             break ;
         } else {
-            let mut p2: *const wchar_t =
+            let p2: *const wchar_t =
                 wcschr(p1.offset(1 as c_int as isize), '>' as i32);
             if len as c_long >
                    p1.wrapping_offset_from(p) as c_long {
@@ -1241,7 +1215,7 @@ pub unsafe extern "C" fn stfl_print_richtext(mut w: *mut stfl_widget,
                     p1.wrapping_offset_from(p) as c_long as c_uint
             }
             if wmove(win, y as c_int, x as c_int) ==
-                   -(1 as c_int) {
+                   -1 {
             } else { waddnwstr(win, p, len as c_int); };
             retval = retval.wrapping_add(len);
             x = x.wrapping_add(wcswidth(p, len as size_t) as c_uint);
@@ -1264,7 +1238,7 @@ pub unsafe extern "C" fn stfl_print_richtext(mut w: *mut stfl_widget,
                 if end_col.wrapping_sub(x) > 0 as c_int as c_uint
                    {
                     if wmove(win, y as c_int, x as c_int) ==
-                           -(1 as c_int) {
+                           -1 {
                     } else {
                         waddnwstr(win,
                                   (*::std::mem::transmute::<&[u8; 8],
@@ -1282,7 +1256,6 @@ pub unsafe extern "C" fn stfl_print_richtext(mut w: *mut stfl_widget,
                 stfl_style(win, style_normal);
             } else {
                 let mut lookup_stylename: [wchar_t; 128] = [0; 128];
-                let mut style: *const wchar_t = 0 as *const wchar_t;
                 if has_focus != 0 {
                     swprintf(lookup_stylename.as_mut_ptr(),
                              (::std::mem::size_of::<[wchar_t; 128]>() as
@@ -1302,7 +1275,7 @@ pub unsafe extern "C" fn stfl_print_richtext(mut w: *mut stfl_widget,
                                                        &[c_int; 17]>(b"s\x00\x00\x00t\x00\x00\x00y\x00\x00\x00l\x00\x00\x00e\x00\x00\x00_\x00\x00\x00%\x00\x00\x00l\x00\x00\x00s\x00\x00\x00_\x00\x00\x00n\x00\x00\x00o\x00\x00\x00r\x00\x00\x00m\x00\x00\x00a\x00\x00\x00l\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
                              stylename.as_mut_ptr());
                 }
-                style =
+                let style =
                     stfl_widget_getkv_str(w, lookup_stylename.as_mut_ptr(),
                                           (*::std::mem::transmute::<&[u8; 4],
                                                                     &[c_int; 1]>(b"\x00\x00\x00\x00")).as_ptr());

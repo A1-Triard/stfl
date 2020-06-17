@@ -1,29 +1,30 @@
-use ::libc;
+use libc::*;
+
 extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
     pub type _IO_marker;
     pub type ldat;
     #[no_mangle]
-    fn fread(__ptr: *mut libc::c_void, __size: size_t, __n: size_t,
+    fn fread(__ptr: *mut c_void, __size: size_t, __n: size_t,
              __stream: *mut FILE) -> size_t;
     #[no_mangle]
-    fn fprintf(_: *mut FILE, _: *const libc::c_char, _: ...) -> libc::c_int;
+    fn fprintf(_: *mut FILE, _: *const c_char, _: ...) -> c_int;
     #[no_mangle]
-    fn fopen(__filename: *const libc::c_char, __modes: *const libc::c_char)
+    fn fopen(__filename: *const c_char, __modes: *const c_char)
      -> *mut FILE;
     #[no_mangle]
-    fn fclose(__stream: *mut FILE) -> libc::c_int;
+    fn fclose(__stream: *mut FILE) -> c_int;
     #[no_mangle]
     static mut stderr: *mut FILE;
     #[no_mangle]
-    fn mbsrtowcs(__dst: *mut wchar_t, __src: *mut *const libc::c_char,
+    fn mbsrtowcs(__dst: *mut wchar_t, __src: *mut *const c_char,
                  __len: size_t, __ps: *mut mbstate_t) -> size_t;
     #[no_mangle]
     fn wmemcpy(__s1: *mut wchar_t, __s2: *const wchar_t, __n: size_t)
      -> *mut wchar_t;
     #[no_mangle]
-    fn wcslen(_: *const libc::c_int) -> libc::c_ulong;
+    fn wcslen(_: *const c_int) -> c_ulong;
     #[no_mangle]
     fn wcscspn(__wcs: *const wchar_t, __reject: *const wchar_t) -> size_t;
     #[no_mangle]
@@ -32,89 +33,89 @@ extern "C" {
     fn stfl_widget_setkv_str(w: *mut stfl_widget, key: *const wchar_t,
                              value: *const wchar_t) -> *mut stfl_kv;
     #[no_mangle]
-    fn malloc(_: libc::c_ulong) -> *mut libc::c_void;
+    fn malloc(_: c_ulong) -> *mut c_void;
     #[no_mangle]
-    fn realloc(_: *mut libc::c_void, _: libc::c_ulong) -> *mut libc::c_void;
+    fn realloc(_: *mut c_void, _: c_ulong) -> *mut c_void;
     #[no_mangle]
-    fn free(__ptr: *mut libc::c_void);
+    fn free(__ptr: *mut c_void);
     #[no_mangle]
     fn abort() -> !;
     #[no_mangle]
-    fn mbstowcs(__pwcs: *mut wchar_t, __s: *const libc::c_char, __n: size_t)
+    fn mbstowcs(__pwcs: *mut wchar_t, __s: *const c_char, __n: size_t)
      -> size_t;
     #[no_mangle]
-    fn wcstombs(__s: *mut libc::c_char, __pwcs: *const wchar_t, __n: size_t)
+    fn wcstombs(__s: *mut c_char, __pwcs: *const wchar_t, __n: size_t)
      -> size_t;
     #[no_mangle]
-    fn memcpy(_: *mut libc::c_void, _: *const libc::c_void, _: libc::c_ulong)
-     -> *mut libc::c_void;
+    fn memcpy(_: *mut c_void, _: *const c_void, _: c_ulong)
+     -> *mut c_void;
     #[no_mangle]
-    fn strlen(_: *const libc::c_char) -> libc::c_ulong;
+    fn strlen(_: *const c_char) -> c_ulong;
     #[no_mangle]
-    fn __assert_fail(__assertion: *const libc::c_char,
-                     __file: *const libc::c_char, __line: libc::c_uint,
-                     __function: *const libc::c_char) -> !;
+    fn __assert_fail(__assertion: *const c_char,
+                     __file: *const c_char, __line: c_uint,
+                     __function: *const c_char) -> !;
 }
-pub type size_t = libc::c_ulong;
-pub type wchar_t = libc::c_int;
-pub type wint_t = libc::c_uint;
+pub type size_t = c_ulong;
+pub type wchar_t = c_int;
+pub type wint_t = c_uint;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __mbstate_t {
-    pub __count: libc::c_int,
+    pub __count: c_int,
     pub __value: C2RustUnnamed,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union C2RustUnnamed {
-    pub __wch: libc::c_uint,
-    pub __wchb: [libc::c_char; 4],
+    pub __wch: c_uint,
+    pub __wchb: [c_char; 4],
 }
 pub type mbstate_t = __mbstate_t;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _IO_FILE {
-    pub _flags: libc::c_int,
-    pub _IO_read_ptr: *mut libc::c_char,
-    pub _IO_read_end: *mut libc::c_char,
-    pub _IO_read_base: *mut libc::c_char,
-    pub _IO_write_base: *mut libc::c_char,
-    pub _IO_write_ptr: *mut libc::c_char,
-    pub _IO_write_end: *mut libc::c_char,
-    pub _IO_buf_base: *mut libc::c_char,
-    pub _IO_buf_end: *mut libc::c_char,
-    pub _IO_save_base: *mut libc::c_char,
-    pub _IO_backup_base: *mut libc::c_char,
-    pub _IO_save_end: *mut libc::c_char,
+    pub _flags: c_int,
+    pub _IO_read_ptr: *mut c_char,
+    pub _IO_read_end: *mut c_char,
+    pub _IO_read_base: *mut c_char,
+    pub _IO_write_base: *mut c_char,
+    pub _IO_write_ptr: *mut c_char,
+    pub _IO_write_end: *mut c_char,
+    pub _IO_buf_base: *mut c_char,
+    pub _IO_buf_end: *mut c_char,
+    pub _IO_save_base: *mut c_char,
+    pub _IO_backup_base: *mut c_char,
+    pub _IO_save_end: *mut c_char,
     pub _markers: *mut _IO_marker,
     pub _chain: *mut _IO_FILE,
-    pub _fileno: libc::c_int,
-    pub _flags2: libc::c_int,
+    pub _fileno: c_int,
+    pub _flags2: c_int,
     pub _old_offset: __off_t,
-    pub _cur_column: libc::c_ushort,
-    pub _vtable_offset: libc::c_schar,
-    pub _shortbuf: [libc::c_char; 1],
-    pub _lock: *mut libc::c_void,
+    pub _cur_column: c_ushort,
+    pub _vtable_offset: c_schar,
+    pub _shortbuf: [c_char; 1],
+    pub _lock: *mut c_void,
     pub _offset: __off64_t,
     pub _codecvt: *mut _IO_codecvt,
     pub _wide_data: *mut _IO_wide_data,
     pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut libc::c_void,
+    pub _freeres_buf: *mut c_void,
     pub __pad5: size_t,
-    pub _mode: libc::c_int,
-    pub _unused2: [libc::c_char; 20],
+    pub _mode: c_int,
+    pub _unused2: [c_char; 20],
 }
-pub type __off64_t = libc::c_long;
+pub type __off64_t = c_long;
 pub type _IO_lock_t = ();
-pub type __off_t = libc::c_long;
+pub type __off_t = c_long;
 pub type FILE = _IO_FILE;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct stfl_form {
     pub root: *mut stfl_widget,
-    pub current_focus_id: libc::c_int,
-    pub cursor_x: libc::c_int,
-    pub cursor_y: libc::c_int,
+    pub current_focus_id: c_int,
+    pub cursor_x: c_int,
+    pub cursor_y: c_int,
     pub event_queue: *mut stfl_event,
     pub event: *mut wchar_t,
     pub mtx: pthread_mutex_t,
@@ -123,19 +124,19 @@ pub struct stfl_form {
 #[repr(C)]
 pub union pthread_mutex_t {
     pub __data: __pthread_mutex_s,
-    pub __size: [libc::c_char; 40],
-    pub __align: libc::c_long,
+    pub __size: [c_char; 40],
+    pub __align: c_long,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct __pthread_mutex_s {
-    pub __lock: libc::c_int,
-    pub __count: libc::c_uint,
-    pub __owner: libc::c_int,
-    pub __nusers: libc::c_uint,
-    pub __kind: libc::c_int,
-    pub __spins: libc::c_short,
-    pub __elision: libc::c_short,
+    pub __lock: c_int,
+    pub __count: c_uint,
+    pub __owner: c_int,
+    pub __nusers: c_uint,
+    pub __kind: c_int,
+    pub __spins: c_short,
+    pub __elision: c_short,
     pub __list: __pthread_list_t,
 }
 pub type __pthread_list_t = __pthread_internal_list;
@@ -160,19 +161,19 @@ pub struct stfl_widget {
     pub last_child: *mut stfl_widget,
     pub kv_list: *mut stfl_kv,
     pub type_0: *mut stfl_widget_type,
-    pub id: libc::c_int,
-    pub x: libc::c_int,
-    pub y: libc::c_int,
-    pub w: libc::c_int,
-    pub h: libc::c_int,
-    pub min_w: libc::c_int,
-    pub min_h: libc::c_int,
-    pub cur_x: libc::c_int,
-    pub cur_y: libc::c_int,
-    pub parser_indent: libc::c_int,
-    pub allow_focus: libc::c_int,
-    pub setfocus: libc::c_int,
-    pub internal_data: *mut libc::c_void,
+    pub id: c_int,
+    pub x: c_int,
+    pub y: c_int,
+    pub w: c_int,
+    pub h: c_int,
+    pub min_w: c_int,
+    pub min_h: c_int,
+    pub cur_x: c_int,
+    pub cur_y: c_int,
+    pub parser_indent: c_int,
+    pub allow_focus: c_int,
+    pub setfocus: c_int,
+    pub internal_data: *mut c_void,
     pub name: *mut wchar_t,
     pub cls: *mut wchar_t,
 }
@@ -194,20 +195,20 @@ pub struct stfl_widget_type {
     pub f_process: Option<unsafe extern "C" fn(_: *mut stfl_widget,
                                                _: *mut stfl_widget,
                                                _: *mut stfl_form, _: wchar_t,
-                                               _: libc::c_int)
-                              -> libc::c_int>,
+                                               _: c_int)
+                              -> c_int>,
 }
 pub type WINDOW = _win_st;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct _win_st {
-    pub _cury: libc::c_short,
-    pub _curx: libc::c_short,
-    pub _maxy: libc::c_short,
-    pub _maxx: libc::c_short,
-    pub _begy: libc::c_short,
-    pub _begx: libc::c_short,
-    pub _flags: libc::c_short,
+    pub _cury: c_short,
+    pub _curx: c_short,
+    pub _maxy: c_short,
+    pub _maxx: c_short,
+    pub _begy: c_short,
+    pub _begx: c_short,
+    pub _flags: c_short,
     pub _attrs: attr_t,
     pub _bkgd: chtype,
     pub _notimeout: bool,
@@ -219,36 +220,36 @@ pub struct _win_st {
     pub _immed: bool,
     pub _sync: bool,
     pub _use_keypad: bool,
-    pub _delay: libc::c_int,
+    pub _delay: c_int,
     pub _line: *mut ldat,
-    pub _regtop: libc::c_short,
-    pub _regbottom: libc::c_short,
-    pub _parx: libc::c_int,
-    pub _pary: libc::c_int,
+    pub _regtop: c_short,
+    pub _regbottom: c_short,
+    pub _parx: c_int,
+    pub _pary: c_int,
     pub _parent: *mut WINDOW,
     pub _pad: pdat,
-    pub _yoffset: libc::c_short,
+    pub _yoffset: c_short,
     pub _bkgrnd: cchar_t,
-    pub _color: libc::c_int,
+    pub _color: c_int,
 }
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct cchar_t {
     pub attr: attr_t,
     pub chars: [wchar_t; 5],
-    pub ext_color: libc::c_int,
+    pub ext_color: c_int,
 }
 pub type attr_t = chtype;
-pub type chtype = libc::c_uint;
+pub type chtype = c_uint;
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub struct pdat {
-    pub _pad_y: libc::c_short,
-    pub _pad_x: libc::c_short,
-    pub _pad_top: libc::c_short,
-    pub _pad_left: libc::c_short,
-    pub _pad_bottom: libc::c_short,
-    pub _pad_right: libc::c_short,
+    pub _pad_y: c_short,
+    pub _pad_x: c_short,
+    pub _pad_top: c_short,
+    pub _pad_left: c_short,
+    pub _pad_bottom: c_short,
+    pub _pad_right: c_short,
 }
 /*
  *  STFL - The Structured Terminal Forms Language/Library
@@ -279,9 +280,9 @@ pub struct stfl_kv {
     pub key: *mut wchar_t,
     pub value: *mut wchar_t,
     pub name: *mut wchar_t,
-    pub id: libc::c_int,
+    pub id: c_int,
 }
-pub type C2RustUnnamed_0 = libc::c_uint;
+pub type C2RustUnnamed_0 = c_uint;
 pub const DOUBLE_QUOTE_NAME: C2RustUnnamed_0 = 5;
 pub const DOUBLE_QUOTE: C2RustUnnamed_0 = 4;
 pub const SINGLE_QUOTE_NAME: C2RustUnnamed_0 = 3;
@@ -310,37 +311,36 @@ pub const PLAIN: C2RustUnnamed_0 = 0;
  *  stfl_compat.h: Some compatibility hacks for b0rken architectures
  */
 #[inline]
-unsafe extern "C" fn compat_wcsdup(mut src: *const wchar_t) -> *mut wchar_t {
-    let mut n: size_t =
-        wcslen(src).wrapping_add(1 as libc::c_int as
-                                     libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
+unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
+    let n: size_t =
+        wcslen(src).wrapping_add(1 as c_int as
+                                     c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
                                                                      as
-                                                                     libc::c_ulong);
-    let mut dest: *mut wchar_t = malloc(n) as *mut wchar_t;
-    memcpy(dest as *mut libc::c_void, src as *const libc::c_void, n);
+                                                                     c_ulong);
+    let dest: *mut wchar_t = malloc(n) as *mut wchar_t;
+    memcpy(dest as *mut c_void, src as *const c_void, n);
     return dest;
 }
-unsafe extern "C" fn mywcscspn(mut wcs: *const wchar_t,
-                               mut reject: *const wchar_t,
-                               mut flags: libc::c_int) -> size_t {
+unsafe extern "C" fn mywcscspn(wcs: *const wchar_t,
+                               reject: *const wchar_t,
+                               flags: c_int) -> size_t {
     let mut state: C2RustUnnamed_0 = PLAIN;
-    let mut len: libc::c_int = 0 as libc::c_int;
-    let mut i: libc::c_int = 0;
+    let mut len: c_int = 0 as c_int;
     loop  {
         if *wcs.offset(len as isize) == 0 { return len as size_t }
-        match state as libc::c_uint {
+        match state as c_uint {
             0 => {
-                if flags & 0x2 as libc::c_int != 0 &&
+                if flags & 0x2 as c_int != 0 &&
                        *wcs.offset(len as isize) == '[' as i32 {
                     state = NAME_BLOCK
-                } else if flags & 0x1 as libc::c_int != 0 &&
+                } else if flags & 0x1 as c_int != 0 &&
                               *wcs.offset(len as isize) == '\'' as i32 {
                     state = SINGLE_QUOTE
-                } else if flags & 0x1 as libc::c_int != 0 &&
+                } else if flags & 0x1 as c_int != 0 &&
                               *wcs.offset(len as isize) == '\"' as i32 {
                     state = DOUBLE_QUOTE
                 } else {
-                    i = 0 as libc::c_int;
+                    let mut i = 0 as c_int;
                     while *reject.offset(i as isize) != 0 {
                         if *wcs.offset(len as isize) ==
                                *reject.offset(i as isize) {
@@ -351,10 +351,10 @@ unsafe extern "C" fn mywcscspn(mut wcs: *const wchar_t,
                 }
             }
             1 => {
-                if flags & 0x1 as libc::c_int != 0 &&
+                if flags & 0x1 as c_int != 0 &&
                        *wcs.offset(len as isize) == '\'' as i32 {
                     state = SINGLE_QUOTE_NAME
-                } else if flags & 0x1 as libc::c_int != 0 &&
+                } else if flags & 0x1 as c_int != 0 &&
                               *wcs.offset(len as isize) == '\"' as i32 {
                     state = DOUBLE_QUOTE_NAME
                 } else if *wcs.offset(len as isize) == ']' as i32 {
@@ -364,20 +364,20 @@ unsafe extern "C" fn mywcscspn(mut wcs: *const wchar_t,
             2 | 3 => {
                 if *wcs.offset(len as isize) == '\'' as i32 {
                     state =
-                        if state as libc::c_uint ==
-                               SINGLE_QUOTE as libc::c_int as libc::c_uint {
-                            PLAIN as libc::c_int
-                        } else { NAME_BLOCK as libc::c_int } as
+                        if state as c_uint ==
+                               SINGLE_QUOTE as c_int as c_uint {
+                            PLAIN as c_int
+                        } else { NAME_BLOCK as c_int } as
                             C2RustUnnamed_0
                 }
             }
             4 | 5 => {
                 if *wcs.offset(len as isize) == '\"' as i32 {
                     state =
-                        if state as libc::c_uint ==
-                               DOUBLE_QUOTE as libc::c_int as libc::c_uint {
-                            PLAIN as libc::c_int
-                        } else { NAME_BLOCK as libc::c_int } as
+                        if state as c_uint ==
+                               DOUBLE_QUOTE as c_int as c_uint {
+                            PLAIN as c_int
+                        } else { NAME_BLOCK as c_int } as
                             C2RustUnnamed_0
                 }
             }
@@ -386,20 +386,16 @@ unsafe extern "C" fn mywcscspn(mut wcs: *const wchar_t,
         len += 1
     };
 }
-unsafe extern "C" fn unquote(mut text: *const wchar_t, mut tlen: libc::c_int)
+unsafe extern "C" fn unquote(text: *const wchar_t, tlen: c_int)
  -> *mut wchar_t {
-    let mut len_v: libc::c_int = 0 as libc::c_int;
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
-    let mut value: *mut wchar_t = 0 as *mut wchar_t;
+    let mut len_v: c_int = 0 as c_int;
     if text.is_null() { return 0 as *mut wchar_t }
-    i = 0 as libc::c_int;
-    while (i < tlen || tlen < 0 as libc::c_int) &&
-              *text.offset(i as isize) != 0 {
+    let mut i = 0 as c_int;
+    while (i < tlen || tlen < 0 as c_int) && *text.offset(i as isize) != 0 {
         if *text.offset(i as isize) == '\'' as i32 {
             loop  {
                 i += 1;
-                if i == tlen && tlen >= 0 as libc::c_int { break ; }
+                if i == tlen && tlen >= 0 as c_int { break ; }
                 if *text.offset(i as isize) == 0 ||
                        *text.offset(i as isize) == '\'' as i32 {
                     break ;
@@ -409,7 +405,7 @@ unsafe extern "C" fn unquote(mut text: *const wchar_t, mut tlen: libc::c_int)
         } else if *text.offset(i as isize) == '\"' as i32 {
             loop  {
                 i += 1;
-                if i == tlen && tlen >= 0 as libc::c_int { break ; }
+                if i == tlen && tlen >= 0 as c_int { break ; }
                 if *text.offset(i as isize) == 0 ||
                        *text.offset(i as isize) == '\"' as i32 {
                     break ;
@@ -419,19 +415,19 @@ unsafe extern "C" fn unquote(mut text: *const wchar_t, mut tlen: libc::c_int)
         } else { len_v += 1 }
         i += 1
     }
-    value =
+    let value =
         malloc((::std::mem::size_of::<wchar_t>() as
-                    libc::c_ulong).wrapping_mul((len_v + 1 as libc::c_int) as
-                                                    libc::c_ulong)) as
+                    c_ulong).wrapping_mul((len_v + 1 as c_int) as
+                                                    c_ulong)) as
             *mut wchar_t;
-    j = 0 as libc::c_int;
-    i = j;
-    while (i < tlen || tlen < 0 as libc::c_int) &&
+    let mut j = 0 as c_int;
+    let mut i = j;
+    while (i < tlen || tlen < 0 as c_int) &&
               *text.offset(i as isize) != 0 {
         if *text.offset(i as isize) == '\'' as i32 {
             loop  {
                 i += 1;
-                if i == tlen && tlen >= 0 as libc::c_int { break ; }
+                if i == tlen && tlen >= 0 as c_int { break ; }
                 if *text.offset(i as isize) == 0 ||
                        *text.offset(i as isize) == '\'' as i32 {
                     break ;
@@ -443,7 +439,7 @@ unsafe extern "C" fn unquote(mut text: *const wchar_t, mut tlen: libc::c_int)
         } else if *text.offset(i as isize) == '\"' as i32 {
             loop  {
                 i += 1;
-                if i == tlen && tlen >= 0 as libc::c_int { break ; }
+                if i == tlen && tlen >= 0 as c_int { break ; }
                 if *text.offset(i as isize) == 0 ||
                        *text.offset(i as isize) == '\"' as i32 {
                     break ;
@@ -459,138 +455,138 @@ unsafe extern "C" fn unquote(mut text: *const wchar_t, mut tlen: libc::c_int)
         }
         i += 1
     }
-    *value.offset(j as isize) = 0 as libc::c_int;
+    *value.offset(j as isize) = 0 as c_int;
     if j == len_v {
     } else {
-        __assert_fail(b"j == len_v\x00" as *const u8 as *const libc::c_char,
-                      b"parser.c\x00" as *const u8 as *const libc::c_char,
-                      155 as libc::c_int as libc::c_uint,
+        __assert_fail(b"j == len_v\x00" as *const u8 as *const c_char,
+                      b"parser.c\x00" as *const u8 as *const c_char,
+                      155 as c_int as c_uint,
                       (*::std::mem::transmute::<&[u8; 39],
-                                                &[libc::c_char; 39]>(b"wchar_t *unquote(const wchar_t *, int)\x00")).as_ptr());
+                                                &[c_char; 39]>(b"wchar_t *unquote(const wchar_t *, int)\x00")).as_ptr());
     }
     return value;
 }
 #[target_feature(enable = "avx")]
-unsafe extern "C" fn extract_name(mut key: *mut *mut wchar_t,
-                                  mut name: *mut *mut wchar_t) {
-    let mut len: libc::c_int =
+unsafe extern "C" fn extract_name(key: *mut *mut wchar_t,
+                                  name: *mut *mut wchar_t) {
+    let mut len: c_int =
         wcscspn(*key,
                 (*::std::mem::transmute::<&[u8; 8],
-                                          &[libc::c_int; 2]>(b"[\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
-            as libc::c_int;
-    if *(*key).offset(len as isize) == 0 as libc::c_int {
+                                          &[c_int; 2]>(b"[\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
+            as c_int;
+    if *(*key).offset(len as isize) == 0 as c_int {
         *name = 0 as *mut wchar_t;
         return
     }
     *name =
         compat_wcsdup((*key).offset(len as
-                                        isize).offset(1 as libc::c_int as
+                                        isize).offset(1 as c_int as
                                                           isize));
     *key =
-        realloc(*key as *mut libc::c_void,
+        realloc(*key as *mut c_void,
                 (::std::mem::size_of::<wchar_t>() as
-                     libc::c_ulong).wrapping_mul((len + 1 as libc::c_int) as
-                                                     libc::c_ulong)) as
+                     c_ulong).wrapping_mul((len + 1 as c_int) as
+                                                     c_ulong)) as
             *mut wchar_t;
-    *(*key).offset(len as isize) = 0 as libc::c_int;
+    *(*key).offset(len as isize) = 0 as c_int;
     len =
         mywcscspn(*name,
                   (*::std::mem::transmute::<&[u8; 8],
-                                            &[libc::c_int; 2]>(b"]\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
-                  0x1 as libc::c_int) as libc::c_int;
-    *(*name).offset(len as isize) = 0 as libc::c_int;
+                                            &[c_int; 2]>(b"]\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
+                  0x1 as c_int) as c_int;
+    *(*name).offset(len as isize) = 0 as c_int;
 }
-unsafe extern "C" fn extract_class(mut key: *mut *mut wchar_t,
-                                   mut cls: *mut *mut wchar_t) {
-    let mut len: libc::c_int =
+unsafe extern "C" fn extract_class(key: *mut *mut wchar_t,
+                                   cls: *mut *mut wchar_t) {
+    let len: c_int =
         wcscspn(*key,
                 (*::std::mem::transmute::<&[u8; 8],
-                                          &[libc::c_int; 2]>(b"#\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
-            as libc::c_int;
-    if *(*key).offset(len as isize) == 0 as libc::c_int {
+                                          &[c_int; 2]>(b"#\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
+            as c_int;
+    if *(*key).offset(len as isize) == 0 as c_int {
         *cls = 0 as *mut wchar_t;
         return
     }
     *cls =
         compat_wcsdup((*key).offset(len as
-                                        isize).offset(1 as libc::c_int as
+                                        isize).offset(1 as c_int as
                                                           isize));
     *key =
-        realloc(*key as *mut libc::c_void,
+        realloc(*key as *mut c_void,
                 (::std::mem::size_of::<wchar_t>() as
-                     libc::c_ulong).wrapping_mul((len + 1 as libc::c_int) as
-                                                     libc::c_ulong)) as
+                     c_ulong).wrapping_mul((len + 1 as c_int) as
+                                                     c_ulong)) as
             *mut wchar_t;
-    *(*key).offset(len as isize) = 0 as libc::c_int;
+    *(*key).offset(len as isize) = 0 as c_int;
 }
-unsafe extern "C" fn read_type(mut text: *mut *const wchar_t,
-                               mut type_0: *mut *mut wchar_t,
-                               mut name: *mut *mut wchar_t,
-                               mut cls: *mut *mut wchar_t) -> libc::c_int {
-    let mut len: libc::c_int =
+unsafe extern "C" fn read_type(text: *mut *const wchar_t,
+                               type_0: *mut *mut wchar_t,
+                               name: *mut *mut wchar_t,
+                               cls: *mut *mut wchar_t) -> c_int {
+    let len: c_int =
         mywcscspn(*text,
                   (*::std::mem::transmute::<&[u8; 32],
-                                            &[libc::c_int; 8]>(b" \x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00\n\x00\x00\x00:\x00\x00\x00{\x00\x00\x00}\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
-                  0x1 as libc::c_int | 0x2 as libc::c_int) as libc::c_int;
-    if *(*text).offset(len as isize) == ':' as i32 || len == 0 as libc::c_int
+                                            &[c_int; 8]>(b" \x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00\n\x00\x00\x00:\x00\x00\x00{\x00\x00\x00}\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
+                  0x1 as c_int | 0x2 as c_int) as c_int;
+    if *(*text).offset(len as isize) == ':' as i32 || len == 0 as c_int
        {
-        return 0 as libc::c_int
+        return 0 as c_int
     }
     *type_0 =
-        malloc(((len + 1 as libc::c_int) as
-                    libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
-                                                    as libc::c_ulong)) as
+        malloc(((len + 1 as c_int) as
+                    c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
+                                                    as c_ulong)) as
             *mut wchar_t;
     wmemcpy(*type_0, *text, len as size_t);
-    *(*type_0).offset(len as isize) = 0 as libc::c_int;
+    *(*type_0).offset(len as isize) = 0 as c_int;
     *text = (*text).offset(len as isize);
     extract_name(type_0, name);
     extract_class(type_0, cls);
-    return 1 as libc::c_int;
+    return 1 as c_int;
 }
-unsafe extern "C" fn read_kv(mut text: *mut *const wchar_t,
-                             mut key: *mut *mut wchar_t,
-                             mut name: *mut *mut wchar_t,
-                             mut value: *mut *mut wchar_t) -> libc::c_int {
-    let mut len_k: libc::c_int =
+unsafe extern "C" fn read_kv(text: *mut *const wchar_t,
+                             key: *mut *mut wchar_t,
+                             name: *mut *mut wchar_t,
+                             value: *mut *mut wchar_t) -> c_int {
+    let len_k: c_int =
         mywcscspn(*text,
                   (*::std::mem::transmute::<&[u8; 32],
-                                            &[libc::c_int; 8]>(b" \x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00\n\x00\x00\x00:\x00\x00\x00{\x00\x00\x00}\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
-                  0x1 as libc::c_int | 0x2 as libc::c_int) as libc::c_int;
+                                            &[c_int; 8]>(b" \x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00\n\x00\x00\x00:\x00\x00\x00{\x00\x00\x00}\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
+                  0x1 as c_int | 0x2 as c_int) as c_int;
     if *(*text).offset(len_k as isize) != ':' as i32 ||
-           len_k == 0 as libc::c_int {
-        return 0 as libc::c_int
+           len_k == 0 as c_int {
+        return 0 as c_int
     }
     *key =
-        malloc(((len_k + 1 as libc::c_int) as
-                    libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
-                                                    as libc::c_ulong)) as
+        malloc(((len_k + 1 as c_int) as
+                    c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
+                                                    as c_ulong)) as
             *mut wchar_t;
     wmemcpy(*key, *text, len_k as size_t);
-    *(*key).offset(len_k as isize) = 0 as libc::c_int;
-    *text = (*text).offset((len_k + 1 as libc::c_int) as isize);
+    *(*key).offset(len_k as isize) = 0 as c_int;
+    *text = (*text).offset((len_k + 1 as c_int) as isize);
     extract_name(key, name);
-    let mut qval_len: libc::c_int =
+    let qval_len: c_int =
         mywcscspn(*text,
                   (*::std::mem::transmute::<&[u8; 28],
-                                            &[libc::c_int; 7]>(b" \x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00\n\x00\x00\x00{\x00\x00\x00}\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
-                  0x1 as libc::c_int) as libc::c_int;
+                                            &[c_int; 7]>(b" \x00\x00\x00\t\x00\x00\x00\r\x00\x00\x00\n\x00\x00\x00{\x00\x00\x00}\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
+                  0x1 as c_int) as c_int;
     *value = unquote(*text, qval_len);
     *text = (*text).offset(qval_len as isize);
-    return 1 as libc::c_int;
+    return 1;
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
  -> *mut stfl_widget {
-    let mut current_block: u64;
+    let current_block: u64;
     let mut root: *mut stfl_widget = 0 as *mut stfl_widget;
     let mut current: *mut stfl_widget = 0 as *mut stfl_widget;
-    let mut bracket_indenting: libc::c_int = -(1 as libc::c_int);
-    let mut bracket_level: libc::c_int = 0 as libc::c_int;
+    let mut bracket_indenting: c_int = -(1 as c_int);
+    let mut bracket_level: c_int = 0 as c_int;
     's_17:
         loop  {
-            let mut indenting: libc::c_int = 0 as libc::c_int;
-            if bracket_indenting >= 0 as libc::c_int {
+            let mut indenting: c_int = 0 as c_int;
+            if bracket_indenting >= 0 as c_int {
                 while *text == ' ' as i32 || *text == '\t' as i32 {
                     text = text.offset(1)
                 }
@@ -608,10 +604,10 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                         text = text.offset(1)
                     }
                 }
-                if bracket_level == 0 as libc::c_int {
-                    bracket_indenting = -(1 as libc::c_int)
+                if bracket_level == 0 as c_int {
+                    bracket_indenting = -(1 as c_int)
                 }
-                if bracket_level < 0 as libc::c_int {
+                if bracket_level < 0 as c_int {
                     current_block = 6712573431332408062;
                     break ;
                 }
@@ -619,7 +615,7 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                 current_block = 6712573431332408062;
                 break ;
             }
-            if bracket_indenting >= 0 as libc::c_int {
+            if bracket_indenting >= 0 as c_int {
                 while *text == ' ' as i32 || *text == '\t' as i32 {
                     text = text.offset(1)
                 }
@@ -628,15 +624,15 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                     break ;
                 }
                 indenting =
-                    bracket_indenting + (bracket_level - 1 as libc::c_int)
+                    bracket_indenting + (bracket_level - 1 as c_int)
             } else {
                 while *text == ' ' as i32 || *text == '\t' as i32 ||
                           *text == '\r' as i32 || *text == '\n' as i32 {
                     if *text == '\r' as i32 || *text == '\n' as i32 {
-                        indenting = 0 as libc::c_int
+                        indenting = 0 as c_int
                     } else if *text == '\t' as i32 {
-                        indenting = -(1 as libc::c_int)
-                    } else if indenting >= 0 as libc::c_int { indenting += 1 }
+                        indenting = -(1 as c_int)
+                    } else if indenting >= 0 as c_int { indenting += 1 }
                     text = text.offset(1)
                 }
                 if *text == '*' as i32 {
@@ -650,7 +646,7 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                     continue ;
                 }
             }
-            if *text == 0 as libc::c_int {
+            if *text == 0 as c_int {
                 current_block = 1425453989644512380;
                 break ;
             }
@@ -658,42 +654,42 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
             let mut name: *mut wchar_t = 0 as *mut wchar_t;
             let mut cls: *mut wchar_t = 0 as *mut wchar_t;
             let mut value: *mut wchar_t = 0 as *mut wchar_t;
-            if indenting < 0 as libc::c_int {
+            if indenting < 0 as c_int {
                 current_block = 6712573431332408062;
                 break ;
             }
             if *text == '<' as i32 {
                 text = text.offset(1);
-                let mut filename_len: libc::c_int =
+                let filename_len: c_int =
                     wcscspn(text,
                             (*::std::mem::transmute::<&[u8; 8],
-                                                      &[libc::c_int; 2]>(b">\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
-                        as libc::c_int;
-                let vla = (filename_len + 1 as libc::c_int) as usize;
+                                                      &[c_int; 2]>(b">\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
+                        as c_int;
+                let vla = (filename_len + 1 as c_int) as usize;
                 let mut wfn: Vec<wchar_t> = ::std::vec::from_elem(0, vla);
                 wmemcpy(wfn.as_mut_ptr(), text,
-                        (filename_len + 1 as libc::c_int) as size_t);
+                        (filename_len + 1 as c_int) as size_t);
                 *wfn.as_mut_ptr().offset(filename_len as isize) =
-                    0 as libc::c_int;
-                let mut len: size_t =
-                    wcstombs(0 as *mut libc::c_char, wfn.as_mut_ptr(),
-                             0 as libc::c_int as
-                                 size_t).wrapping_add(1 as libc::c_int as
-                                                          libc::c_ulong);
+                    0 as c_int;
+                let len: size_t =
+                    wcstombs(0 as *mut c_char, wfn.as_mut_ptr(),
+                             0 as c_int as
+                                 size_t).wrapping_add(1 as c_int as
+                                                          c_ulong);
                 let vla_0 = len as usize;
-                let mut filename: Vec<libc::c_char> =
+                let mut filename: Vec<c_char> =
                     ::std::vec::from_elem(0, vla_0);
-                let mut rc: size_t =
+                let rc: size_t =
                     wcstombs(filename.as_mut_ptr(), wfn.as_mut_ptr(), len);
-                if rc != -(1 as libc::c_int) as size_t {
+                if rc != -(1 as c_int) as size_t {
                 } else {
                     __assert_fail(b"rc != (size_t)-1\x00" as *const u8 as
-                                      *const libc::c_char,
+                                      *const c_char,
                                   b"parser.c\x00" as *const u8 as
-                                      *const libc::c_char,
-                                  319 as libc::c_int as libc::c_uint,
+                                      *const c_char,
+                                  319 as c_int as c_uint,
                                   (*::std::mem::transmute::<&[u8; 49],
-                                                            &[libc::c_char; 49]>(b"struct stfl_widget *stfl_parser(const wchar_t *)\x00")).as_ptr());
+                                                            &[c_char; 49]>(b"struct stfl_widget *stfl_parser(const wchar_t *)\x00")).as_ptr());
                 }
                 text = text.offset(filename_len as isize);
                 if *text != 0 { text = text.offset(1) }
@@ -728,13 +724,13 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                     }
                 }
                 if read_type(&mut text, &mut key, &mut name, &mut cls) ==
-                       1 as libc::c_int {
+                       1 as c_int {
                     let mut n_0: *mut stfl_widget = stfl_widget_new(key);
                     if n_0.is_null() {
                         current_block = 6712573431332408062;
                         break ;
                     }
-                    free(key as *mut libc::c_void);
+                    free(key as *mut c_void);
                     (*n_0).parent = current;
                     if !(*current).last_child.is_null() {
                         (*(*current).last_child).next_sibling = n_0;
@@ -744,29 +740,29 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                         (*current).last_child = n_0
                     }
                     (*n_0).parser_indent = indenting;
-                    (*n_0).name = unquote(name, -(1 as libc::c_int));
-                    free(name as *mut libc::c_void);
+                    (*n_0).name = unquote(name, -(1 as c_int));
+                    free(name as *mut c_void);
                     (*n_0).cls = cls;
                     current = n_0
                 } else {
                     if !(read_kv(&mut text, &mut key, &mut name, &mut value)
-                             == 1 as libc::c_int) {
+                             == 1 as c_int) {
                         current_block = 6712573431332408062;
                         break ;
                     }
                     let mut kv: *mut stfl_kv =
                         stfl_widget_setkv_str(current, key, value);
                     if !(*kv).name.is_null() {
-                        free((*kv).name as *mut libc::c_void);
+                        free((*kv).name as *mut c_void);
                     }
-                    (*kv).name = unquote(name, -(1 as libc::c_int));
-                    free(name as *mut libc::c_void);
-                    free(key as *mut libc::c_void);
-                    free(value as *mut libc::c_void);
+                    (*kv).name = unquote(name, -(1 as c_int));
+                    free(name as *mut c_void);
+                    free(key as *mut c_void);
+                    free(value as *mut c_void);
                 }
             } else {
                 if read_type(&mut text, &mut key, &mut name, &mut cls) ==
-                       0 as libc::c_int {
+                       0 as c_int {
                     current_block = 6712573431332408062;
                     break ;
                 }
@@ -775,11 +771,11 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                     current_block = 6712573431332408062;
                     break ;
                 }
-                free(key as *mut libc::c_void);
+                free(key as *mut c_void);
                 root = n_1;
                 current = n_1;
-                (*n_1).name = unquote(name, -(1 as libc::c_int));
-                free(name as *mut libc::c_void);
+                (*n_1).name = unquote(name, -(1 as c_int));
+                free(name as *mut c_void);
                 (*n_1).cls = cls
             }
             while *text != 0 && *text != '\n' as i32 && *text != '\r' as i32
@@ -793,104 +789,103 @@ pub unsafe extern "C" fn stfl_parser(mut text: *const wchar_t)
                     continue ;
                 }
                 if read_kv(&mut text, &mut key, &mut name, &mut value) ==
-                       0 as libc::c_int {
+                       0 as c_int {
                     current_block = 6712573431332408062;
                     break 's_17 ;
                 }
                 let mut kv_0: *mut stfl_kv =
                     stfl_widget_setkv_str(current, key, value);
                 if !(*kv_0).name.is_null() {
-                    free((*kv_0).name as *mut libc::c_void);
+                    free((*kv_0).name as *mut c_void);
                 }
-                (*kv_0).name = unquote(name, -(1 as libc::c_int));
-                free(name as *mut libc::c_void);
-                free(key as *mut libc::c_void);
-                free(value as *mut libc::c_void);
+                (*kv_0).name = unquote(name, -(1 as c_int));
+                free(name as *mut c_void);
+                free(key as *mut c_void);
+                free(value as *mut c_void);
             }
         }
     match current_block {
         1425453989644512380 => { if !root.is_null() { return root } }
         _ => { }
     }
-    let mut i: libc::c_int = 0;
     fprintf(stderr,
             b"STFL Parser Error near \'\x00" as *const u8 as
-                *const libc::c_char);
-    i = 0 as libc::c_int;
-    while *text != 0 && i < 20 as libc::c_int {
+                *const c_char);
+    let mut i = 0 as c_int;
+    while *text != 0 && i < 20 as c_int {
         if *text == '\n' as i32 {
-            fprintf(stderr, b"\\n\x00" as *const u8 as *const libc::c_char);
+            fprintf(stderr, b"\\n\x00" as *const u8 as *const c_char);
         } else if *text == '\t' as i32 {
-            fprintf(stderr, b" \x00" as *const u8 as *const libc::c_char);
-        } else if *text < 32 as libc::c_int {
+            fprintf(stderr, b" \x00" as *const u8 as *const c_char);
+        } else if *text < 32 as c_int {
             fprintf(stderr,
-                    b"\\%03lo\x00" as *const u8 as *const libc::c_char,
-                    *text as libc::c_ulong);
+                    b"\\%03lo\x00" as *const u8 as *const c_char,
+                    *text as c_ulong);
         } else {
-            fprintf(stderr, b"%lc\x00" as *const u8 as *const libc::c_char,
+            fprintf(stderr, b"%lc\x00" as *const u8 as *const c_char,
                     *text as wint_t);
         }
         i += 1;
         text = text.offset(1)
     }
-    fprintf(stderr, b"\'.\r\n\x00" as *const u8 as *const libc::c_char);
+    fprintf(stderr, b"\'.\r\n\x00" as *const u8 as *const c_char);
     abort();
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_parser_file(mut filename: *const libc::c_char)
+pub unsafe extern "C" fn stfl_parser_file(filename: *const c_char)
  -> *mut stfl_widget {
-    let mut f: *mut FILE =
-        fopen(filename, b"r\x00" as *const u8 as *const libc::c_char);
+    let f: *mut FILE =
+        fopen(filename, b"r\x00" as *const u8 as *const c_char);
     if f.is_null() {
         fprintf(stderr,
                 b"STFL Parser Error: Can\'t read file \'%s\'!\n\x00" as
-                    *const u8 as *const libc::c_char, filename);
+                    *const u8 as *const c_char, filename);
         abort();
     }
-    let mut len: libc::c_int = 0 as libc::c_int;
-    let mut text: *mut libc::c_char = 0 as *mut libc::c_char;
+    let mut len: c_int = 0 as c_int;
+    let mut text: *mut c_char = 0 as *mut c_char;
     loop  {
-        let mut pos: libc::c_int = len;
-        len += 4096 as libc::c_int;
+        let mut pos: c_int = len;
+        len += 4096 as c_int;
         text =
-            realloc(text as *mut libc::c_void, len as libc::c_ulong) as
-                *mut libc::c_char;
+            realloc(text as *mut c_void, len as c_ulong) as
+                *mut c_char;
         pos =
             (pos as
-                 libc::c_ulong).wrapping_add(fread(text.offset(pos as isize)
-                                                       as *mut libc::c_void,
-                                                   1 as libc::c_int as size_t,
-                                                   4096 as libc::c_int as
+                 c_ulong).wrapping_add(fread(text.offset(pos as isize)
+                                                       as *mut c_void,
+                                                   1 as c_int as size_t,
+                                                   4096 as c_int as
                                                        size_t, f)) as
-                libc::c_int as libc::c_int;
+                c_int as c_int;
         if !(pos < len) { continue ; }
-        *text.offset(pos as isize) = 0 as libc::c_int as libc::c_char;
+        *text.offset(pos as isize) = 0 as c_int as c_char;
         fclose(f);
         break ;
     }
-    let mut text1: *const libc::c_char = text;
-    let mut wtextsize: size_t =
+    let mut text1: *const c_char = text;
+    let wtextsize: size_t =
         mbsrtowcs(0 as *mut wchar_t, &mut text1,
-                  strlen(text1).wrapping_add(1 as libc::c_int as
-                                                 libc::c_ulong),
+                  strlen(text1).wrapping_add(1 as c_int as
+                                                 c_ulong),
                   0 as
-                      *mut mbstate_t).wrapping_add(1 as libc::c_int as
-                                                       libc::c_ulong);
-    let mut wtext: *mut wchar_t =
+                      *mut mbstate_t).wrapping_add(1 as c_int as
+                                                       c_ulong);
+    let wtext: *mut wchar_t =
         malloc((::std::mem::size_of::<wchar_t>() as
-                    libc::c_ulong).wrapping_mul(wtextsize)) as *mut wchar_t;
-    let mut rc: size_t = mbstowcs(wtext, text, wtextsize);
-    if rc != -(1 as libc::c_int) as size_t {
+                    c_ulong).wrapping_mul(wtextsize)) as *mut wchar_t;
+    let rc: size_t = mbstowcs(wtext, text, wtextsize);
+    if rc != -(1 as c_int) as size_t {
     } else {
         __assert_fail(b"rc != (size_t)-1\x00" as *const u8 as
-                          *const libc::c_char,
-                      b"parser.c\x00" as *const u8 as *const libc::c_char,
-                      490 as libc::c_int as libc::c_uint,
+                          *const c_char,
+                      b"parser.c\x00" as *const u8 as *const c_char,
+                      490 as c_int as c_uint,
                       (*::std::mem::transmute::<&[u8; 51],
-                                                &[libc::c_char; 51]>(b"struct stfl_widget *stfl_parser_file(const char *)\x00")).as_ptr());
+                                                &[c_char; 51]>(b"struct stfl_widget *stfl_parser_file(const char *)\x00")).as_ptr());
     }
-    let mut w: *mut stfl_widget = stfl_parser(wtext);
-    free(text as *mut libc::c_void);
-    free(wtext as *mut libc::c_void);
+    let w: *mut stfl_widget = stfl_parser(wtext);
+    free(text as *mut c_void);
+    free(wtext as *mut c_void);
     return w;
 }

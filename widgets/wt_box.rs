@@ -247,12 +247,12 @@ unsafe extern "C" fn wt_hbox_init(mut w: *mut stfl_widget) {
     (*d).type_0 = 'H' as i32 as libc::c_char;
     (*w).internal_data = d as *mut libc::c_void;
 }
-unsafe extern "C" fn wt_box_done(mut w: *mut stfl_widget) {
+unsafe extern "C" fn wt_box_done(w: *mut stfl_widget) {
     free((*w).internal_data);
 }
-unsafe extern "C" fn wt_box_prepare(mut w: *mut stfl_widget,
-                                    mut f: *mut stfl_form) {
-    let mut d: *mut box_data = (*w).internal_data as *mut box_data;
+unsafe extern "C" fn wt_box_prepare(w: *mut stfl_widget,
+                                    f: *mut stfl_form) {
+    let d: *mut box_data = (*w).internal_data as *mut box_data;
     (*w).min_w = 0 as libc::c_int;
     (*w).min_h = 0 as libc::c_int;
     let mut c: *mut stfl_widget = (*w).first_child;
@@ -274,15 +274,13 @@ unsafe extern "C" fn wt_box_prepare(mut w: *mut stfl_widget,
         c = (*c).next_sibling
     };
 }
-unsafe extern "C" fn wt_box_draw(mut w: *mut stfl_widget,
-                                 mut f: *mut stfl_form,
-                                 mut win: *mut WINDOW) {
-    let mut d: *mut box_data = (*w).internal_data as *mut box_data;
+unsafe extern "C" fn wt_box_draw(w: *mut stfl_widget,
+                                 f: *mut stfl_form,
+                                 win: *mut WINDOW) {
+    let d: *mut box_data = (*w).internal_data as *mut box_data;
     let mut num_dyn_children: libc::c_int = 0 as libc::c_int;
     let mut min_w: libc::c_int = 0 as libc::c_int;
     let mut min_h: libc::c_int = 0 as libc::c_int;
-    let mut i: libc::c_int = 0;
-    let mut j: libc::c_int = 0;
     let mut c: *mut stfl_widget = (*w).first_child;
     while !c.is_null() {
         if stfl_widget_getkv_int(c,
@@ -323,9 +321,9 @@ unsafe extern "C" fn wt_box_draw(mut w: *mut stfl_widget,
     let mut box_w: libc::c_int = (*w).w;
     let mut box_h: libc::c_int = (*w).h;
     stfl_widget_style(w, f, win);
-    i = box_x;
+    let mut i = box_x;
     while i < box_x + box_w {
-        j = box_y;
+        let mut j = box_y;
         while j < box_y + box_h {
             if wmove(win, j, i) == -(1 as libc::c_int) {
             } else { waddch(win, ' ' as i32 as chtype); };
@@ -369,8 +367,7 @@ unsafe extern "C" fn wt_box_draw(mut w: *mut stfl_widget,
         } else { (box_h) - min_h };
     let mut cursor: libc::c_int =
         if (*d).type_0 as libc::c_int == 'H' as i32 { box_x } else { box_y };
-    c = (*w).first_child;
-    i = 0 as libc::c_int;
+    let mut c = (*w).first_child;
     while !c.is_null() {
         if stfl_widget_getkv_int(c,
                                  (*::std::mem::transmute::<&[u8; 36],
@@ -405,7 +402,7 @@ unsafe extern "C" fn wt_box_draw(mut w: *mut stfl_widget,
                        } else { 'v' as i32 }).is_null() {
                 let fresh0 = num_dyn_children;
                 num_dyn_children = num_dyn_children - 1;
-                let mut extra: libc::c_int = sizes_extra / fresh0;
+                let extra: libc::c_int = sizes_extra / fresh0;
                 sizes_extra -= extra;
                 size += extra
             }
@@ -456,15 +453,14 @@ unsafe extern "C" fn wt_box_draw(mut w: *mut stfl_widget,
                                                                       win);
         }
         c = (*c).next_sibling;
-        i += 1
     };
 }
-unsafe extern "C" fn wt_box_process(mut w: *mut stfl_widget,
-                                    mut fw: *mut stfl_widget,
-                                    mut f: *mut stfl_form, mut ch: wchar_t,
-                                    mut isfunckey: libc::c_int)
+unsafe extern "C" fn wt_box_process(w: *mut stfl_widget,
+                                    fw: *mut stfl_widget,
+                                    f: *mut stfl_form, ch: wchar_t,
+                                    isfunckey: libc::c_int)
  -> libc::c_int {
-    let mut d: *mut box_data = (*w).internal_data as *mut box_data;
+    let d: *mut box_data = (*w).internal_data as *mut box_data;
     if (*d).type_0 as libc::c_int == 'H' as i32 {
         if stfl_matchbind(w, ch, isfunckey,
                           (*::std::mem::transmute::<&[u8; 20],
@@ -511,7 +507,7 @@ unsafe extern "C" fn wt_box_process(mut w: *mut stfl_widget,
 pub static mut stfl_widget_type_vbox: stfl_widget_type =
     unsafe {
         {
-            let mut init =
+            let init =
                 stfl_widget_type{name:
                                      (*::std::mem::transmute::<&[u8; 20],
                                                                &[libc::c_int; 5]>(b"v\x00\x00\x00b\x00\x00\x00o\x00\x00\x00x\x00\x00\x00\x00\x00\x00\x00")).as_ptr()
@@ -563,7 +559,7 @@ pub static mut stfl_widget_type_vbox: stfl_widget_type =
 pub static mut stfl_widget_type_hbox: stfl_widget_type =
     unsafe {
         {
-            let mut init =
+            let init =
                 stfl_widget_type{name:
                                      (*::std::mem::transmute::<&[u8; 20],
                                                                &[libc::c_int; 5]>(b"h\x00\x00\x00b\x00\x00\x00o\x00\x00\x00x\x00\x00\x00\x00\x00\x00\x00")).as_ptr()

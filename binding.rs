@@ -231,13 +231,13 @@ pub struct stfl_kv {
  *  stfl_compat.h: Some compatibility hacks for b0rken architectures
  */
 #[inline]
-unsafe extern "C" fn compat_wcsdup(mut src: *const wchar_t) -> *mut wchar_t {
-    let mut n: size_t =
+unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
+    let n: size_t =
         wcslen(src).wrapping_add(1 as libc::c_int as
                                      libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
                                                                      as
                                                                      libc::c_ulong);
-    let mut dest: *mut wchar_t = malloc(n) as *mut wchar_t;
+    let dest: *mut wchar_t = malloc(n) as *mut wchar_t;
     memcpy(dest as *mut libc::c_void, src as *const libc::c_void, n);
     return dest;
 }
@@ -263,8 +263,8 @@ unsafe extern "C" fn compat_wcsdup(mut src: *const wchar_t) -> *mut wchar_t {
  *  binding.c: Helper functions for key bindings and stuff
  */
 #[no_mangle]
-pub unsafe extern "C" fn stfl_keyname(mut ch: wchar_t,
-                                      mut isfunckey: libc::c_int)
+pub unsafe extern "C" fn stfl_keyname(ch: wchar_t,
+                                      isfunckey: libc::c_int)
  -> *mut wchar_t {
     if isfunckey == 0 {
         if ch == '\r' as i32 || ch == '\n' as i32 {
@@ -287,19 +287,18 @@ pub unsafe extern "C" fn stfl_keyname(mut ch: wchar_t,
             return compat_wcsdup((*::std::mem::transmute::<&[u8; 40],
                                                            &[libc::c_int; 10]>(b"B\x00\x00\x00A\x00\x00\x00C\x00\x00\x00K\x00\x00\x00S\x00\x00\x00P\x00\x00\x00A\x00\x00\x00C\x00\x00\x00E\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
         }
-        let mut ret: *mut wchar_t = 0 as *mut wchar_t;
+        let ret;
         if ch < 32 as libc::c_int {
-            let mut key: *const libc::c_char = keyname(ch);
-            let mut keylen: libc::c_uint =
+            let key: *const libc::c_char = keyname(ch);
+            let keylen: libc::c_uint =
                 strlen(key).wrapping_add(1 as libc::c_int as libc::c_ulong) as
                     libc::c_uint;
-            let mut i: libc::c_uint = 0;
             ret =
                 malloc((keylen as
                             libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
                                                             as libc::c_ulong))
                     as *mut wchar_t;
-            i = 0 as libc::c_int as libc::c_uint;
+            let mut i = 0 as libc::c_int as libc::c_uint;
             while i < keylen {
                 *ret.offset(i as isize) = *key.offset(i as isize) as wchar_t;
                 i = i.wrapping_add(1)
@@ -314,7 +313,7 @@ pub unsafe extern "C" fn stfl_keyname(mut ch: wchar_t,
     }
     if 0o410 as libc::c_int + 0 as libc::c_int <= ch &&
            ch <= 0o410 as libc::c_int + 63 as libc::c_int {
-        let mut name: *mut wchar_t =
+        let name: *mut wchar_t =
             malloc((4 as libc::c_int as
                         libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
                                                         as libc::c_ulong)) as
@@ -334,16 +333,15 @@ pub unsafe extern "C" fn stfl_keyname(mut ch: wchar_t,
                4 as libc::c_int as libc::c_ulong) == 0 {
         event_c = event_c.offset(4 as libc::c_int as isize)
     }
-    let mut event_len: libc::c_int =
+    let event_len: libc::c_int =
         strlen(event_c).wrapping_add(1 as libc::c_int as libc::c_ulong) as
             libc::c_int;
-    let mut i_0: libc::c_int = 0;
-    let mut event: *mut wchar_t =
+    let event: *mut wchar_t =
         malloc((event_len as
                     libc::c_ulong).wrapping_mul(::std::mem::size_of::<wchar_t>()
                                                     as libc::c_ulong)) as
             *mut wchar_t;
-    i_0 = 0 as libc::c_int;
+    let mut i_0 = 0 as libc::c_int;
     while i_0 < event_len {
         *event.offset(i_0 as isize) =
             *event_c.offset(i_0 as isize) as wchar_t;
@@ -352,15 +350,15 @@ pub unsafe extern "C" fn stfl_keyname(mut ch: wchar_t,
     return event;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_matchbind(mut w: *mut stfl_widget,
-                                        mut ch: wchar_t,
-                                        mut isfunckey: libc::c_int,
-                                        mut name: *mut wchar_t,
+pub unsafe extern "C" fn stfl_matchbind(w: *mut stfl_widget,
+                                        ch: wchar_t,
+                                        isfunckey: libc::c_int,
+                                        name: *mut wchar_t,
                                         mut auto_desc: *mut wchar_t)
  -> libc::c_int {
-    let mut event: *mut wchar_t = stfl_keyname(ch, isfunckey);
-    let mut event_len: libc::c_int = wcslen(event) as libc::c_int;
-    let mut kvname_len: libc::c_int =
+    let event: *mut wchar_t = stfl_keyname(ch, isfunckey);
+    let event_len: libc::c_int = wcslen(event) as libc::c_int;
+    let kvname_len: libc::c_int =
         wcslen(name).wrapping_add(6 as libc::c_int as libc::c_ulong) as
             libc::c_int;
     let vla = kvname_len as usize;
@@ -388,7 +386,7 @@ pub unsafe extern "C" fn stfl_matchbind(mut w: *mut stfl_widget,
                                    (*::std::mem::transmute::<&[u8; 20],
                                                              &[libc::c_int; 5]>(b" \x00\x00\x00\t\x00\x00\x00\n\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
                                 as isize);
-            let mut len: libc::c_int =
+            let len: libc::c_int =
                 wcscspn(desc,
                         (*::std::mem::transmute::<&[u8; 20],
                                                   &[libc::c_int; 5]>(b" \x00\x00\x00\t\x00\x00\x00\n\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00")).as_ptr())

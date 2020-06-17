@@ -277,15 +277,13 @@ pub struct stfl_kv {
  *
  *  style.c: Helper functions for text colors and attributes
  */
-unsafe extern "C" fn wcssep(mut stringp: *mut *mut wchar_t,
-                            mut delim: *const wchar_t) -> *mut wchar_t {
-    let mut tmp: *mut wchar_t = *stringp;
-    let mut tmp2: *mut wchar_t = tmp;
-    let mut tmp3: *const wchar_t = 0 as *const wchar_t;
+unsafe extern "C" fn wcssep(stringp: *mut *mut wchar_t,
+                            delim: *const wchar_t) -> *mut wchar_t {
+    let tmp: *mut wchar_t = *stringp;
     if (*stringp).is_null() { return 0 as *mut wchar_t }
-    tmp2 = tmp;
+    let mut tmp2 = tmp;
     while *tmp2 != 0 {
-        tmp3 = delim;
+        let mut tmp3 = delim;
         while *tmp3 != 0 {
             if *tmp2 == *tmp3 {
                 /* delimiter found */
@@ -305,7 +303,7 @@ static mut stfl_colorpair_fg: [libc::c_int; 256] = [0; 256];
 #[no_mangle]
 pub static mut stfl_colorpair_counter: libc::c_int = 1 as libc::c_int;
 #[no_mangle]
-pub unsafe extern "C" fn stfl_style(mut win: *mut WINDOW,
+pub unsafe extern "C" fn stfl_style(win: *mut WINDOW,
                                     mut style: *const wchar_t) {
     let mut bg_color: libc::c_int = -(1 as libc::c_int);
     let mut fg_color: libc::c_int = -(1 as libc::c_int);
@@ -317,7 +315,7 @@ pub unsafe extern "C" fn stfl_style(mut win: *mut WINDOW,
                                                       &[libc::c_int; 3]>(b" \x00\x00\x00\t\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
                          as isize);
     while *style != 0 {
-        let mut field_len: libc::c_int =
+        let field_len: libc::c_int =
             wcscspn(style,
                     (*::std::mem::transmute::<&[u8; 8],
                                               &[libc::c_int; 2]>(b",\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
@@ -364,7 +362,7 @@ pub unsafe extern "C" fn stfl_style(mut win: *mut WINDOW,
                       (*::std::mem::transmute::<&[u8; 12],
                                                 &[libc::c_int; 3]>(b"f\x00\x00\x00g\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
                    == 0 {
-            let mut color: libc::c_int = -(1 as libc::c_int);
+            let color;
             if wcscmp(value,
                       (*::std::mem::transmute::<&[u8; 24],
                                                 &[libc::c_int; 6]>(b"b\x00\x00\x00l\x00\x00\x00a\x00\x00\x00c\x00\x00\x00k\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
@@ -523,8 +521,7 @@ pub unsafe extern "C" fn stfl_style(mut win: *mut WINDOW,
     if bg_color < 0 as libc::c_int || bg_color >= COLORS {
         bg_color = b as libc::c_int
     }
-    let mut i: libc::c_int = 0;
-    i = 1 as libc::c_int;
+    let mut i = 1 as libc::c_int;
     while i < stfl_colorpair_counter {
         if stfl_colorpair_fg[i as usize] == fg_color &&
                stfl_colorpair_bg[i as usize] == bg_color {
@@ -556,9 +553,9 @@ pub unsafe extern "C" fn stfl_style(mut win: *mut WINDOW,
     wcolor_set(win, i as libc::c_short, 0 as *mut libc::c_void);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_widget_style(mut w: *mut stfl_widget,
-                                           mut f: *mut stfl_form,
-                                           mut win: *mut WINDOW) {
+pub unsafe extern "C" fn stfl_widget_style(w: *mut stfl_widget,
+                                           f: *mut stfl_form,
+                                           win: *mut WINDOW) {
     let mut style: *const wchar_t =
         (*::std::mem::transmute::<&[u8; 4],
                                   &[libc::c_int; 1]>(b"\x00\x00\x00\x00")).as_ptr();

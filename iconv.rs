@@ -106,7 +106,7 @@ pub union pthread_mutexattr_t {
     pub __align: libc::c_int,
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_ipool_create(mut code: *const libc::c_char)
+pub unsafe extern "C" fn stfl_ipool_create(code: *const libc::c_char)
  -> *mut stfl_ipool {
     let mut pool: *mut stfl_ipool =
         malloc(::std::mem::size_of::<stfl_ipool>() as libc::c_ulong) as
@@ -119,8 +119,8 @@ pub unsafe extern "C" fn stfl_ipool_create(mut code: *const libc::c_char)
     return pool;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_ipool_add(mut pool: *mut stfl_ipool,
-                                        mut data: *mut libc::c_void)
+pub unsafe extern "C" fn stfl_ipool_add(pool: *mut stfl_ipool,
+                                        data: *mut libc::c_void)
  -> *mut libc::c_void {
     let mut entry: *mut stfl_ipool_entry =
         malloc(::std::mem::size_of::<stfl_ipool_entry>() as libc::c_ulong) as
@@ -133,12 +133,9 @@ pub unsafe extern "C" fn stfl_ipool_add(mut pool: *mut stfl_ipool,
     return data;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_ipool_towc(mut pool: *mut stfl_ipool,
-                                         mut buf: *const libc::c_char)
+pub unsafe extern "C" fn stfl_ipool_towc(pool: *mut stfl_ipool,
+                                         buf: *const libc::c_char)
  -> *const wchar_t {
-    let mut outbuf: *mut libc::c_char = 0 as *mut libc::c_char;
-    let mut outbytesleft: size_t = 0;
-    let mut rc: libc::c_int = 0;
     if pool.is_null() || buf.is_null() { return 0 as *const wchar_t }
     pthread_mutex_lock(&mut (*pool).mtx);
     if strcmp(b"WCHAR_T\x00" as *const u8 as *const libc::c_char,
@@ -166,6 +163,9 @@ pub unsafe extern "C" fn stfl_ipool_towc(mut pool: *mut stfl_ipool,
             as libc::c_int;
     let mut buffer_pos: libc::c_int = 0 as libc::c_int;
     let mut buffer: *mut libc::c_char = 0 as *mut libc::c_char;
+    let mut outbuf;
+    let mut outbytesleft;
+    let mut rc;
     's_74:
         loop  {
             buffer_size =
@@ -234,12 +234,9 @@ pub unsafe extern "C" fn stfl_ipool_towc(mut pool: *mut stfl_ipool,
                *const wchar_t;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_ipool_fromwc(mut pool: *mut stfl_ipool,
-                                           mut buf: *const wchar_t)
+pub unsafe extern "C" fn stfl_ipool_fromwc(pool: *mut stfl_ipool,
+                                           buf: *const wchar_t)
  -> *const libc::c_char {
-    let mut outbuf: *mut libc::c_char = 0 as *mut libc::c_char;
-    let mut outbytesleft: size_t = 0;
-    let mut rc: libc::c_int = 0;
     if pool.is_null() || buf.is_null() { return 0 as *const libc::c_char }
     pthread_mutex_lock(&mut (*pool).mtx);
     if strcmp(b"WCHAR_T\x00" as *const u8 as *const libc::c_char,
@@ -265,6 +262,9 @@ pub unsafe extern "C" fn stfl_ipool_fromwc(mut pool: *mut stfl_ipool,
             libc::c_int;
     let mut buffer_pos: libc::c_int = 0 as libc::c_int;
     let mut buffer: *mut libc::c_char = 0 as *mut libc::c_char;
+    let mut outbuf;
+    let mut outbytesleft;
+    let mut rc;
     's_74:
         loop  {
             buffer_size =
@@ -327,11 +327,11 @@ pub unsafe extern "C" fn stfl_ipool_fromwc(mut pool: *mut stfl_ipool,
                *const libc::c_char;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_ipool_flush(mut pool: *mut stfl_ipool) {
+pub unsafe extern "C" fn stfl_ipool_flush(pool: *mut stfl_ipool) {
     if pool.is_null() { return }
     pthread_mutex_lock(&mut (*pool).mtx);
     while !(*pool).list.is_null() {
-        let mut l: *mut stfl_ipool_entry = (*pool).list;
+        let l: *mut stfl_ipool_entry = (*pool).list;
         (*pool).list = (*l).next;
         free((*l).data);
         free(l as *mut libc::c_void);
@@ -339,7 +339,7 @@ pub unsafe extern "C" fn stfl_ipool_flush(mut pool: *mut stfl_ipool) {
     pthread_mutex_unlock(&mut (*pool).mtx);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_ipool_destroy(mut pool: *mut stfl_ipool) {
+pub unsafe extern "C" fn stfl_ipool_destroy(pool: *mut stfl_ipool) {
     if pool.is_null() { return }
     stfl_ipool_flush(pool);
     free((*pool).code as *mut libc::c_void);

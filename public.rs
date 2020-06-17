@@ -268,7 +268,7 @@ pub type pthread_key_t = libc::c_uint;
  */
 #[no_mangle]
 pub static mut stfl_api_allow_null_pointers: libc::c_int = 1 as libc::c_int;
-unsafe extern "C" fn checkret(mut txt: *const wchar_t) -> *const wchar_t {
+unsafe extern "C" fn checkret(txt: *const wchar_t) -> *const wchar_t {
     if stfl_api_allow_null_pointers == 0 && txt.is_null() {
         return (*::std::mem::transmute::<&[u8; 4],
                                          &[libc::c_int; 1]>(b"\x00\x00\x00\x00")).as_ptr()
@@ -276,7 +276,7 @@ unsafe extern "C" fn checkret(mut txt: *const wchar_t) -> *const wchar_t {
     return txt;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_create(mut text: *const wchar_t)
+pub unsafe extern "C" fn stfl_create(text: *const wchar_t)
  -> *mut stfl_form {
     let mut f: *mut stfl_form = stfl_form_new();
     (*f).root =
@@ -290,14 +290,14 @@ pub unsafe extern "C" fn stfl_create(mut text: *const wchar_t)
     return f;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_free(mut f: *mut stfl_form) {
+pub unsafe extern "C" fn stfl_free(f: *mut stfl_form) {
     stfl_form_free(f);
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_redraw() { stfl_form_redraw(); }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_run(mut f: *mut stfl_form,
-                                  mut timeout: libc::c_int)
+pub unsafe extern "C" fn stfl_run(f: *mut stfl_form,
+                                  timeout: libc::c_int)
  -> *const wchar_t {
     stfl_form_run(f, timeout);
     return checkret((*f).event);
@@ -305,10 +305,10 @@ pub unsafe extern "C" fn stfl_run(mut f: *mut stfl_form,
 #[no_mangle]
 pub unsafe extern "C" fn stfl_reset() { stfl_form_reset(); }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_get(mut f: *mut stfl_form,
-                                  mut name: *const wchar_t)
+pub unsafe extern "C" fn stfl_get(f: *mut stfl_form,
+                                  name: *const wchar_t)
  -> *const wchar_t {
-    let mut pseudovar_sep: *mut wchar_t =
+    let pseudovar_sep: *mut wchar_t =
         if !name.is_null() {
             wcschr(name, ':' as i32)
         } else { 0 as *mut libc::c_int };
@@ -324,7 +324,7 @@ pub unsafe extern "C" fn stfl_get(mut f: *mut stfl_form,
         *w_name.as_mut_ptr().offset(pseudovar_sep.wrapping_offset_from(name)
                                         as libc::c_long as isize) =
             0 as libc::c_int;
-        let mut w: *mut stfl_widget =
+        let w: *mut stfl_widget =
             stfl_widget_by_name((*f).root, w_name.as_mut_ptr());
         static mut ret_buffer: [wchar_t; 16] = [0; 16];
         if !w.is_null() {
@@ -396,7 +396,7 @@ pub unsafe extern "C" fn stfl_get(mut f: *mut stfl_form,
             }
         }
     }
-    let mut tmpstr: *const wchar_t =
+    let tmpstr: *const wchar_t =
         stfl_getkv_by_name_str((*f).root,
                                if !name.is_null() {
                                    name
@@ -408,9 +408,9 @@ pub unsafe extern "C" fn stfl_get(mut f: *mut stfl_form,
     return checkret(tmpstr);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_set(mut f: *mut stfl_form,
-                                  mut name: *const wchar_t,
-                                  mut value: *const wchar_t) {
+pub unsafe extern "C" fn stfl_set(f: *mut stfl_form,
+                                  name: *const wchar_t,
+                                  value: *const wchar_t) {
     pthread_mutex_lock(&mut (*f).mtx);
     stfl_setkv_by_name_str((*f).root,
                            if !name.is_null() {
@@ -428,23 +428,19 @@ pub unsafe extern "C" fn stfl_set(mut f: *mut stfl_form,
     pthread_mutex_unlock(&mut (*f).mtx);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_get_focus(mut f: *mut stfl_form)
+pub unsafe extern "C" fn stfl_get_focus(f: *mut stfl_form)
  -> *const wchar_t {
-    let mut fw: *mut stfl_widget = 0 as *mut stfl_widget;
-    let mut tmpstr: *const wchar_t = 0 as *const wchar_t;
     pthread_mutex_lock(&mut (*f).mtx);
-    fw = stfl_widget_by_id((*f).root, (*f).current_focus_id);
-    tmpstr =
-        checkret(if !fw.is_null() { (*fw).name } else { 0 as *mut wchar_t });
+    let fw = stfl_widget_by_id((*f).root, (*f).current_focus_id);
+    let tmpstr = checkret(if !fw.is_null() { (*fw).name } else { 0 as *mut wchar_t });
     pthread_mutex_unlock(&mut (*f).mtx);
     return tmpstr;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_set_focus(mut f: *mut stfl_form,
-                                        mut name: *const wchar_t) {
-    let mut fw: *mut stfl_widget = 0 as *mut stfl_widget;
+pub unsafe extern "C" fn stfl_set_focus(f: *mut stfl_form,
+                                        name: *const wchar_t) {
     pthread_mutex_lock(&mut (*f).mtx);
-    fw =
+    let fw =
         stfl_widget_by_name((*f).root,
                             if !name.is_null() {
                                 name
@@ -456,12 +452,12 @@ pub unsafe extern "C" fn stfl_set_focus(mut f: *mut stfl_form,
     pthread_mutex_unlock(&mut (*f).mtx);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_quote(mut text: *const wchar_t)
+pub unsafe extern "C" fn stfl_quote(text: *const wchar_t)
  -> *const wchar_t {
     static mut mtx: pthread_mutex_t =
         pthread_mutex_t{__data:
                             {
-                                let mut init =
+                                let init =
                                     __pthread_mutex_s{__lock:
                                                           0 as libc::c_int,
                                                       __count:
@@ -482,7 +478,7 @@ pub unsafe extern "C" fn stfl_quote(mut text: *const wchar_t)
                                                               libc::c_short,
                                                       __list:
                                                           {
-                                                              let mut init =
+                                                              let init =
                                                                   __pthread_internal_list{__prev:
                                                                                               0
                                                                                                   as
@@ -524,14 +520,14 @@ pub unsafe extern "C" fn stfl_quote(mut text: *const wchar_t)
     return checkret(retbuffer);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_dump(mut f: *mut stfl_form,
-                                   mut name: *const wchar_t,
-                                   mut prefix: *const wchar_t,
-                                   mut focus: libc::c_int) -> *const wchar_t {
+pub unsafe extern "C" fn stfl_dump(f: *mut stfl_form,
+                                   name: *const wchar_t,
+                                   prefix: *const wchar_t,
+                                   focus: libc::c_int) -> *const wchar_t {
     static mut mtx: pthread_mutex_t =
         pthread_mutex_t{__data:
                             {
-                                let mut init =
+                                let init =
                                     __pthread_mutex_s{__lock:
                                                           0 as libc::c_int,
                                                       __count:
@@ -552,7 +548,7 @@ pub unsafe extern "C" fn stfl_dump(mut f: *mut stfl_form,
                                                               libc::c_short,
                                                       __list:
                                                           {
-                                                              let mut init =
+                                                              let init =
                                                                   __pthread_internal_list{__prev:
                                                                                               0
                                                                                                   as
@@ -572,7 +568,6 @@ pub unsafe extern "C" fn stfl_dump(mut f: *mut stfl_form,
     static mut retbuffer_key: pthread_key_t = 0;
     static mut firstrun: libc::c_int = 1 as libc::c_int;
     static mut retbuffer: *mut wchar_t = 0 as *const wchar_t as *mut wchar_t;
-    let mut w: *mut stfl_widget = 0 as *mut stfl_widget;
     pthread_mutex_lock(&mut mtx);
     pthread_mutex_lock(&mut (*f).mtx);
     if firstrun != 0 {
@@ -584,7 +579,7 @@ pub unsafe extern "C" fn stfl_dump(mut f: *mut stfl_form,
     }
     retbuffer = pthread_getspecific(retbuffer_key) as *mut wchar_t;
     if !retbuffer.is_null() { free(retbuffer as *mut libc::c_void); }
-    w =
+    let w =
         if !name.is_null() && *name != 0 {
             stfl_widget_by_name((*f).root, name)
         } else { (*f).root };
@@ -605,13 +600,13 @@ pub unsafe extern "C" fn stfl_dump(mut f: *mut stfl_form,
     return checkret(retbuffer);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_text(mut f: *mut stfl_form,
-                                   mut name: *const wchar_t)
+pub unsafe extern "C" fn stfl_text(f: *mut stfl_form,
+                                   name: *const wchar_t)
  -> *const wchar_t {
     static mut mtx: pthread_mutex_t =
         pthread_mutex_t{__data:
                             {
-                                let mut init =
+                                let init =
                                     __pthread_mutex_s{__lock:
                                                           0 as libc::c_int,
                                                       __count:
@@ -632,7 +627,7 @@ pub unsafe extern "C" fn stfl_text(mut f: *mut stfl_form,
                                                               libc::c_short,
                                                       __list:
                                                           {
-                                                              let mut init =
+                                                              let init =
                                                                   __pthread_internal_list{__prev:
                                                                                               0
                                                                                                   as
@@ -652,7 +647,6 @@ pub unsafe extern "C" fn stfl_text(mut f: *mut stfl_form,
     static mut retbuffer_key: pthread_key_t = 0;
     static mut firstrun: libc::c_int = 1 as libc::c_int;
     static mut retbuffer: *mut wchar_t = 0 as *const wchar_t as *mut wchar_t;
-    let mut w: *mut stfl_widget = 0 as *mut stfl_widget;
     pthread_mutex_lock(&mut mtx);
     pthread_mutex_lock(&mut (*f).mtx);
     if firstrun != 0 {
@@ -664,7 +658,7 @@ pub unsafe extern "C" fn stfl_text(mut f: *mut stfl_form,
     }
     retbuffer = pthread_getspecific(retbuffer_key) as *mut wchar_t;
     if !retbuffer.is_null() { free(retbuffer as *mut libc::c_void); }
-    w =
+    let w =
         if !name.is_null() && *name != 0 {
             stfl_widget_by_name((*f).root, name)
         } else { (*f).root };
@@ -674,7 +668,7 @@ pub unsafe extern "C" fn stfl_text(mut f: *mut stfl_form,
     pthread_mutex_unlock(&mut mtx);
     return checkret(retbuffer);
 }
-unsafe extern "C" fn stfl_modify_before(mut w: *mut stfl_widget,
+unsafe extern "C" fn stfl_modify_before(w: *mut stfl_widget,
                                         mut n: *mut stfl_widget) {
     if n.is_null() || w.is_null() || (*w).parent.is_null() { return }
     let mut prev_p: *mut *mut stfl_widget = &mut (*(*w).parent).first_child;
@@ -691,7 +685,7 @@ unsafe extern "C" fn stfl_modify_before(mut w: *mut stfl_widget,
 unsafe extern "C" fn stfl_modify_after(mut w: *mut stfl_widget,
                                        mut n: *mut stfl_widget) {
     if n.is_null() || w.is_null() || (*w).parent.is_null() { return }
-    let mut first_n: *mut stfl_widget = n;
+    let first_n: *mut stfl_widget = n;
     let mut last_n: *mut stfl_widget = 0 as *mut stfl_widget;
     while !n.is_null() {
         last_n = n;
@@ -706,7 +700,7 @@ unsafe extern "C" fn stfl_modify_after(mut w: *mut stfl_widget,
 unsafe extern "C" fn stfl_modify_insert(mut w: *mut stfl_widget,
                                         mut n: *mut stfl_widget) {
     if n.is_null() || w.is_null() { return }
-    let mut first_n: *mut stfl_widget = n;
+    let first_n: *mut stfl_widget = n;
     let mut last_n: *mut stfl_widget = 0 as *mut stfl_widget;
     while !n.is_null() { last_n = n; (*n).parent = w; n = (*n).next_sibling }
     if !(*w).first_child.is_null() {
@@ -717,7 +711,7 @@ unsafe extern "C" fn stfl_modify_insert(mut w: *mut stfl_widget,
 unsafe extern "C" fn stfl_modify_append(mut w: *mut stfl_widget,
                                         mut n: *mut stfl_widget) {
     if n.is_null() || w.is_null() { return }
-    let mut first_n: *mut stfl_widget = n;
+    let first_n: *mut stfl_widget = n;
     let mut last_n: *mut stfl_widget = 0 as *mut stfl_widget;
     while !n.is_null() { last_n = n; (*n).parent = w; n = (*n).next_sibling }
     if !(*w).last_child.is_null() {
@@ -727,20 +721,15 @@ unsafe extern "C" fn stfl_modify_append(mut w: *mut stfl_widget,
 }
 #[no_mangle]
 pub unsafe extern "C" fn stfl_modify(mut f: *mut stfl_form,
-                                     mut name: *const wchar_t,
+                                     name: *const wchar_t,
                                      mut mode: *const wchar_t,
-                                     mut text: *const wchar_t) {
-    let mut w: *mut stfl_widget = 0 as *mut stfl_widget;
-    let mut n: *mut stfl_widget = 0 as *mut stfl_widget;
+                                     text: *const wchar_t) {
     pthread_mutex_lock(&mut (*f).mtx);
-    w =
-        stfl_widget_by_name((*f).root,
-                            if !name.is_null() {
-                                name
-                            } else {
-                                (*::std::mem::transmute::<&[u8; 4],
-                                                          &[libc::c_int; 1]>(b"\x00\x00\x00\x00")).as_ptr()
-                            });
+    let w = stfl_widget_by_name((*f).root, if !name.is_null() {
+        name
+    } else {
+        (*::std::mem::transmute::<&[u8; 4], &[libc::c_int; 1]>(b"\x00\x00\x00\x00")).as_ptr()
+    });
     if !w.is_null() {
         mode =
             if !mode.is_null() {
@@ -755,7 +744,7 @@ pub unsafe extern "C" fn stfl_modify(mut f: *mut stfl_form,
                == 0 && w != (*f).root {
             stfl_widget_free(w);
         } else {
-            n =
+            let mut n =
                 stfl_parser(if !text.is_null() {
                                 text
                             } else {
@@ -845,10 +834,4 @@ pub unsafe extern "C" fn stfl_modify(mut f: *mut stfl_form,
         }
     }
     pthread_mutex_unlock(&mut (*f).mtx);
-}
-#[no_mangle]
-pub unsafe extern "C" fn stfl_error() -> *const wchar_t { abort(); }
-#[no_mangle]
-pub unsafe extern "C" fn stfl_error_action(mut mode: *const wchar_t) {
-    abort();
 }

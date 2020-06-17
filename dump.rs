@@ -235,8 +235,8 @@ pub struct txtnode {
     pub value: *mut wchar_t,
     pub len: libc::c_int,
 }
-unsafe extern "C" fn newtxt(mut o: *mut *mut txtnode, mut fmt: *const wchar_t,
-                            mut args: ...) 
+unsafe extern "C" fn newtxt(o: *mut *mut txtnode, fmt: *const wchar_t,
+                            args: ...) 
  /* __attribute__ ((format (wprintf, 2, 3))) */
  {
     let mut n: *mut txtnode =
@@ -254,7 +254,7 @@ unsafe extern "C" fn newtxt(mut o: *mut *mut txtnode, mut fmt: *const wchar_t,
             *mut wchar_t;
     let mut buf_len: libc::c_int = 4096 as libc::c_int;
     loop  {
-        let mut rc: libc::c_int =
+        let rc: libc::c_int =
             vswprintf(buf, buf_len as size_t, fmt, ap.as_va_list());
         if rc < 0 as libc::c_int {
             free(buf as *mut libc::c_void);
@@ -285,10 +285,9 @@ unsafe extern "C" fn newtxt(mut o: *mut *mut txtnode, mut fmt: *const wchar_t,
         (*n).len = wcslen((*n).value) as libc::c_int
     } else { (*n).len = 0 as libc::c_int };
 }
-unsafe extern "C" fn myquote(mut txt: *mut *mut txtnode,
+unsafe extern "C" fn myquote(txt: *mut *mut txtnode,
                              mut text: *const wchar_t) {
     let mut q: [wchar_t; 2] = ['\"' as i32, 0 as libc::c_int];
-    let mut segment_len: libc::c_int = 0;
     if wcscspn(text,
                (*::std::mem::transmute::<&[u8; 8],
                                          &[libc::c_int; 2]>(b"\'\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
@@ -300,7 +299,7 @@ unsafe extern "C" fn myquote(mut txt: *mut *mut txtnode,
         q[0 as libc::c_int as usize] = '\'' as i32
     }
     while *text != 0 {
-        segment_len = wcscspn(text, q.as_mut_ptr()) as libc::c_int;
+        let segment_len = wcscspn(text, q.as_mut_ptr()) as libc::c_int;
         newtxt(txt,
                (*::std::mem::transmute::<&[u8; 40],
                                          &[libc::c_int; 10]>(b"%\x00\x00\x00c\x00\x00\x00%\x00\x00\x00.\x00\x00\x00*\x00\x00\x00l\x00\x00\x00s\x00\x00\x00%\x00\x00\x00c\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
@@ -313,10 +312,10 @@ unsafe extern "C" fn myquote(mut txt: *mut *mut txtnode,
         text = text.offset(segment_len as isize)
     };
 }
-unsafe extern "C" fn mydump(mut w: *mut stfl_widget,
-                            mut prefix: *const wchar_t,
-                            mut focus_id: libc::c_int,
-                            mut txt: *mut *mut txtnode) {
+unsafe extern "C" fn mydump(w: *mut stfl_widget,
+                            prefix: *const wchar_t,
+                            focus_id: libc::c_int,
+                            txt: *mut *mut txtnode) {
     newtxt(txt,
            (*::std::mem::transmute::<&[u8; 32],
                                      &[libc::c_int; 8]>(b"{\x00\x00\x00%\x00\x00\x00l\x00\x00\x00s\x00\x00\x00%\x00\x00\x00l\x00\x00\x00s\x00\x00\x00\x00\x00\x00\x00")).as_ptr(),
@@ -373,8 +372,8 @@ unsafe extern "C" fn mydump(mut w: *mut stfl_widget,
            (*::std::mem::transmute::<&[u8; 8],
                                      &[libc::c_int; 2]>(b"}\x00\x00\x00\x00\x00\x00\x00")).as_ptr());
 }
-unsafe extern "C" fn mytext(mut w: *mut stfl_widget,
-                            mut txt: *mut *mut txtnode) {
+unsafe extern "C" fn mytext(w: *mut stfl_widget,
+                            txt: *mut *mut txtnode) {
     if wcscmp((*(*w).type_0).name,
               (*::std::mem::transmute::<&[u8; 36],
                                         &[libc::c_int; 9]>(b"l\x00\x00\x00i\x00\x00\x00s\x00\x00\x00t\x00\x00\x00i\x00\x00\x00t\x00\x00\x00e\x00\x00\x00m\x00\x00\x00\x00\x00\x00\x00")).as_ptr())
@@ -396,24 +395,22 @@ unsafe extern "C" fn mytext(mut w: *mut stfl_widget,
     let mut c: *mut stfl_widget = (*w).first_child;
     while !c.is_null() { mytext(c, txt); c = (*c).next_sibling };
 }
-unsafe extern "C" fn txt2string(mut txt: *mut txtnode) -> *mut wchar_t {
+unsafe extern "C" fn txt2string(txt: *mut txtnode) -> *mut wchar_t {
     let mut string_len: libc::c_int = 0 as libc::c_int;
-    let mut t: *mut txtnode = 0 as *mut txtnode;
-    let mut prev: *mut txtnode = 0 as *mut txtnode;
-    t = txt;
+    let mut t = txt;
     while !t.is_null() { string_len += (*t).len; t = (*t).prev }
-    let mut string: *mut wchar_t =
+    let string: *mut wchar_t =
         malloc((::std::mem::size_of::<wchar_t>() as
                     libc::c_ulong).wrapping_mul((string_len +
                                                      1 as libc::c_int) as
                                                     libc::c_ulong)) as
             *mut wchar_t;
     let mut i: libc::c_int = string_len;
-    t = txt;
+    let mut t = txt;
     while !t.is_null() {
         i -= (*t).len;
         wmemcpy(string.offset(i as isize), (*t).value, (*t).len as size_t);
-        prev = (*t).prev;
+        let prev = (*t).prev;
         free((*t).value as *mut libc::c_void);
         free(t as *mut libc::c_void);
         t = prev
@@ -422,23 +419,23 @@ unsafe extern "C" fn txt2string(mut txt: *mut txtnode) -> *mut wchar_t {
     return string;
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_quote_backend(mut text: *const wchar_t)
+pub unsafe extern "C" fn stfl_quote_backend(text: *const wchar_t)
  -> *mut wchar_t {
     let mut txt: *mut txtnode = 0 as *mut txtnode;
     myquote(&mut txt, text);
     return txt2string(txt);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_widget_dump(mut w: *mut stfl_widget,
-                                          mut prefix: *const wchar_t,
-                                          mut focus_id: libc::c_int)
+pub unsafe extern "C" fn stfl_widget_dump(w: *mut stfl_widget,
+                                          prefix: *const wchar_t,
+                                          focus_id: libc::c_int)
  -> *mut wchar_t {
     let mut txt: *mut txtnode = 0 as *mut txtnode;
     mydump(w, prefix, focus_id, &mut txt);
     return txt2string(txt);
 }
 #[no_mangle]
-pub unsafe extern "C" fn stfl_widget_text(mut w: *mut stfl_widget)
+pub unsafe extern "C" fn stfl_widget_text(w: *mut stfl_widget)
  -> *mut wchar_t {
     let mut txt: *mut txtnode = 0 as *mut txtnode;
     mytext(w, &mut txt);
