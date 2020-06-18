@@ -11,7 +11,7 @@
 #![feature(ptr_wrapping_offset_from)]
 #![feature(register_tool)]
 #![register_tool(c2rust)]
-//#![deny(warnings)]
+#![deny(warnings)]
 
 
 extern crate libc;
