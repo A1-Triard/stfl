@@ -1,6 +1,5 @@
 use libc::*;
 use crate::public::*;
-//use crate::public::{pthread_mutex_t, malloc, strdup, strcmp, strlen, realloc, __errno_location, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort};
 use crate::public::{malloc, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort};
 
 extern "C" {

@@ -1,117 +1,9 @@
 use libc::*;
 use crate::public::*;
+//use crate::public::{pthread_mutex_t, malloc, strdup, strcmp, strlen, realloc, __errno_location, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort, wchar_t, size_t, wcstombs, FILE, fopen, fread, fclose};
+use crate::public::{malloc, strlen, realloc, wcslen, fprintf, __assert_fail, free, abort, wchar_t, size_t, wcstombs, FILE, fopen, fread, fclose};
+use crate::base::{stfl_widget_setkv_str, stfl_widget_new};
 
-extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
-    pub type ldat;
-    #[no_mangle]
-    fn fread(__ptr: *mut c_void, __size: size_t, __n: size_t,
-             __stream: *mut FILE) -> size_t;
-    #[no_mangle]
-    fn fprintf(_: *mut FILE, _: *const c_char, _: ...) -> c_int;
-    #[no_mangle]
-    fn fopen(__filename: *const c_char, __modes: *const c_char)
-     -> *mut FILE;
-    #[no_mangle]
-    fn fclose(__stream: *mut FILE) -> c_int;
-    #[no_mangle]
-    static mut stderr: *mut FILE;
-    #[no_mangle]
-    fn mbsrtowcs(__dst: *mut wchar_t, __src: *mut *const c_char,
-                 __len: size_t, __ps: *mut mbstate_t) -> size_t;
-    #[no_mangle]
-    fn wmemcpy(__s1: *mut wchar_t, __s2: *const wchar_t, __n: size_t)
-     -> *mut wchar_t;
-    #[no_mangle]
-    fn wcslen(_: *const c_int) -> c_ulong;
-    #[no_mangle]
-    fn wcscspn(__wcs: *const wchar_t, __reject: *const wchar_t) -> size_t;
-    #[no_mangle]
-    fn stfl_widget_new(type_0: *const wchar_t) -> *mut stfl_widget;
-    #[no_mangle]
-    fn stfl_widget_setkv_str(w: *mut stfl_widget, key: *const wchar_t,
-                             value: *const wchar_t) -> *mut stfl_kv;
-    #[no_mangle]
-    fn malloc(_: c_ulong) -> *mut c_void;
-    #[no_mangle]
-    fn realloc(_: *mut c_void, _: c_ulong) -> *mut c_void;
-    #[no_mangle]
-    fn free(__ptr: *mut c_void);
-    #[no_mangle]
-    fn abort() -> !;
-    #[no_mangle]
-    fn mbstowcs(__pwcs: *mut wchar_t, __s: *const c_char, __n: size_t)
-     -> size_t;
-    #[no_mangle]
-    fn wcstombs(__s: *mut c_char, __pwcs: *const wchar_t, __n: size_t)
-     -> size_t;
-    #[no_mangle]
-    fn memcpy(_: *mut c_void, _: *const c_void, _: c_ulong)
-     -> *mut c_void;
-    #[no_mangle]
-    fn strlen(_: *const c_char) -> c_ulong;
-    #[no_mangle]
-    fn __assert_fail(__assertion: *const c_char,
-                     __file: *const c_char, __line: c_uint,
-                     __function: *const c_char) -> !;
-}
-pub type size_t = c_ulong;
-pub type wchar_t = c_int;
-pub type wint_t = c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct __mbstate_t {
-    pub __count: c_int,
-    pub __value: C2RustUnnamed,
-}
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union C2RustUnnamed {
-    pub __wch: c_uint,
-    pub __wchb: [c_char; 4],
-}
-pub type mbstate_t = __mbstate_t;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: c_int,
-    pub _IO_read_ptr: *mut c_char,
-    pub _IO_read_end: *mut c_char,
-    pub _IO_read_base: *mut c_char,
-    pub _IO_write_base: *mut c_char,
-    pub _IO_write_ptr: *mut c_char,
-    pub _IO_write_end: *mut c_char,
-    pub _IO_buf_base: *mut c_char,
-    pub _IO_buf_end: *mut c_char,
-    pub _IO_save_base: *mut c_char,
-    pub _IO_backup_base: *mut c_char,
-    pub _IO_save_end: *mut c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: c_int,
-    pub _flags2: c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: c_ushort,
-    pub _vtable_offset: c_schar,
-    pub _shortbuf: [c_char; 1],
-    pub _lock: *mut c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut c_void,
-    pub __pad5: size_t,
-    pub _mode: c_int,
-    pub _unused2: [c_char; 20],
-}
-pub type __off64_t = c_long;
-pub type _IO_lock_t = ();
-pub type __off_t = c_long;
-pub type FILE = _IO_FILE;
-pub type attr_t = chtype;
-pub type chtype = c_uint;
 pub type C2RustUnnamed_0 = c_uint;
 pub const DOUBLE_QUOTE_NAME: C2RustUnnamed_0 = 5;
 pub const DOUBLE_QUOTE: C2RustUnnamed_0 = 4;
@@ -148,7 +40,7 @@ unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
                                                                      as
                                                                      c_ulong);
     let dest: *mut wchar_t = malloc(n) as *mut wchar_t;
-    memcpy(dest as *mut c_void, src as *const c_void, n);
+    memcpy(dest as *mut c_void, src as *const c_void, n as _);
     return dest;
 }
 unsafe extern "C" fn mywcscspn(wcs: *const wchar_t,

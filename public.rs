@@ -1,6 +1,72 @@
 use libc::*;
 
 extern "C" {
+    #[no_mangle]
+    pub fn fread(__ptr: *mut c_void, __size: size_t, __n: size_t, __stream: *mut FILE) -> size_t;
+    #[no_mangle]
+    pub fn fopen(__filename: *const c_char, __modes: *const c_char) -> *mut FILE;
+    #[no_mangle]
+    pub fn fclose(__stream: *mut FILE) -> c_int;
+    #[no_mangle]
+    pub fn mbsrtowcs(__dst: *mut wchar_t, __src: *mut *const c_char, __len: size_t, __ps: *mut mbstate_t) -> size_t;
+    #[no_mangle]
+    pub fn wcscspn(__wcs: *const wchar_t, __reject: *const wchar_t) -> size_t;
+    #[no_mangle]
+    pub fn mbstowcs(__pwcs: *mut wchar_t, __s: *const c_char, __n: size_t) -> size_t;
+    #[no_mangle]
+    pub fn wcstombs(__s: *mut c_char, __pwcs: *const wchar_t, __n: size_t) -> size_t;
+}
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct __mbstate_t {
+    pub __count: c_int,
+    pub __value: C2RustUnnamed,
+}
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub union C2RustUnnamed {
+    pub __wch: c_uint,
+    pub __wchb: [c_char; 4],
+}
+pub type mbstate_t = __mbstate_t;
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct _IO_FILE {
+    pub _flags: c_int,
+    pub _IO_read_ptr: *mut c_char,
+    pub _IO_read_end: *mut c_char,
+    pub _IO_read_base: *mut c_char,
+    pub _IO_write_base: *mut c_char,
+    pub _IO_write_ptr: *mut c_char,
+    pub _IO_write_end: *mut c_char,
+    pub _IO_buf_base: *mut c_char,
+    pub _IO_buf_end: *mut c_char,
+    pub _IO_save_base: *mut c_char,
+    pub _IO_backup_base: *mut c_char,
+    pub _IO_save_end: *mut c_char,
+    pub _markers: *mut _IO_marker,
+    pub _chain: *mut _IO_FILE,
+    pub _fileno: c_int,
+    pub _flags2: c_int,
+    pub _old_offset: __off_t,
+    pub _cur_column: c_ushort,
+    pub _vtable_offset: c_schar,
+    pub _shortbuf: [c_char; 1],
+    pub _lock: *mut c_void,
+    pub _offset: __off64_t,
+    pub _codecvt: *mut _IO_codecvt,
+    pub _wide_data: *mut _IO_wide_data,
+    pub _freeres_list: *mut _IO_FILE,
+    pub _freeres_buf: *mut c_void,
+    pub __pad5: size_t,
+    pub _mode: c_int,
+    pub _unused2: [c_char; 20],
+}
+pub type __off64_t = c_long;
+pub type _IO_lock_t = ();
+pub type __off_t = c_long;
+pub type FILE = _IO_FILE;
+extern "C" {
     pub type _IO_wide_data;
     pub type _IO_codecvt;
     pub type _IO_marker;
