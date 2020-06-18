@@ -1,4 +1,5 @@
 use libc::*;
+use crate::public::*;
 
 extern "C" {
     pub type _IO_wide_data;
@@ -109,17 +110,6 @@ pub type __off64_t = c_long;
 pub type _IO_lock_t = ();
 pub type __off_t = c_long;
 pub type FILE = _IO_FILE;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct stfl_form {
-    pub root: *mut stfl_widget,
-    pub current_focus_id: c_int,
-    pub cursor_x: c_int,
-    pub cursor_y: c_int,
-    pub event_queue: *mut stfl_event,
-    pub event: *mut wchar_t,
-    pub mtx: pthread_mutex_t,
-}
 #[derive(Copy, Clone)]
 #[repr(C)]
 pub union pthread_mutex_t {

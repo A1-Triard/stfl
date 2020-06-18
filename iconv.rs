@@ -1,4 +1,5 @@
 use ::libc;
+use crate::public::*;
 extern "C" {
     #[no_mangle]
     fn wcslen(_: *const libc::c_int) -> libc::c_ulong;
