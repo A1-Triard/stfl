@@ -1,6 +1,6 @@
 use libc::*;
 use crate::public::*;
-use crate::public::{malloc, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort};
+use crate::public::{malloc, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort, wchar_t, size_t};
 
 extern "C" {
    #[no_mangle]
@@ -32,49 +32,6 @@ extern "C" {
     #[no_mangle]
     fn stfl_keyname(ch: wchar_t, isfunckey: c_int) -> *mut wchar_t;
 }
-pub type size_t = c_ulong;
-pub type wchar_t = c_int;
-pub type wint_t = c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct _IO_FILE {
-    pub _flags: c_int,
-    pub _IO_read_ptr: *mut c_char,
-    pub _IO_read_end: *mut c_char,
-    pub _IO_read_base: *mut c_char,
-    pub _IO_write_base: *mut c_char,
-    pub _IO_write_ptr: *mut c_char,
-    pub _IO_write_end: *mut c_char,
-    pub _IO_buf_base: *mut c_char,
-    pub _IO_buf_end: *mut c_char,
-    pub _IO_save_base: *mut c_char,
-    pub _IO_backup_base: *mut c_char,
-    pub _IO_save_end: *mut c_char,
-    pub _markers: *mut _IO_marker,
-    pub _chain: *mut _IO_FILE,
-    pub _fileno: c_int,
-    pub _flags2: c_int,
-    pub _old_offset: __off_t,
-    pub _cur_column: c_ushort,
-    pub _vtable_offset: c_schar,
-    pub _shortbuf: [c_char; 1],
-    pub _lock: *mut c_void,
-    pub _offset: __off64_t,
-    pub _codecvt: *mut _IO_codecvt,
-    pub _wide_data: *mut _IO_wide_data,
-    pub _freeres_list: *mut _IO_FILE,
-    pub _freeres_buf: *mut c_void,
-    pub __pad5: size_t,
-    pub _mode: c_int,
-    pub _unused2: [c_char; 20],
-}
-pub type __off64_t = c_long;
-pub type _IO_lock_t = ();
-pub type __off_t = c_long;
-pub type FILE = _IO_FILE;
-
-pub type attr_t = chtype;
-pub type chtype = c_uint;
 #[inline]
 unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
     let n: size_t =
