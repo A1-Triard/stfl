@@ -35,25 +35,6 @@ pub struct __va_list_tag {
 pub type size_t = libc::c_ulong;
 pub type wchar_t = libc::c_int;
 pub type va_list = __builtin_va_list;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cchar_t {
-    pub attr: attr_t,
-    pub chars: [wchar_t; 5],
-    pub ext_color: libc::c_int,
-}
-pub type attr_t = chtype;
-pub type chtype = libc::c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pdat {
-    pub _pad_y: libc::c_short,
-    pub _pad_x: libc::c_short,
-    pub _pad_top: libc::c_short,
-    pub _pad_left: libc::c_short,
-    pub _pad_bottom: libc::c_short,
-    pub _pad_right: libc::c_short,
-}
 /*
  *  STFL - The Structured Terminal Forms Language/Library
  *  Copyright (C) 2006, 2007  Clifford Wolf <clifford@clifford.at>
