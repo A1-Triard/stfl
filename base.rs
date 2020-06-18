@@ -167,33 +167,8 @@ pub type _IO_lock_t = ();
 pub type __off_t = c_long;
 pub type FILE = _IO_FILE;
 
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cchar_t {
-    pub attr: attr_t,
-    pub chars: [wchar_t; 5],
-    pub ext_color: c_int,
-}
 pub type attr_t = chtype;
 pub type chtype = c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pdat {
-    pub _pad_y: c_short,
-    pub _pad_x: c_short,
-    pub _pad_top: c_short,
-    pub _pad_left: c_short,
-    pub _pad_bottom: c_short,
-    pub _pad_right: c_short,
-}
-
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub union pthread_mutexattr_t {
-    pub __size: [c_char; 4],
-    pub __align: c_int,
-}
-
 #[inline]
 unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
     let n: size_t =
