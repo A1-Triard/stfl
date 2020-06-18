@@ -33,56 +33,8 @@ extern "C" {
     fn free(__ptr: *mut libc::c_void);
 }
 pub type wchar_t = libc::c_int;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct cchar_t {
-    pub attr: attr_t,
-    pub chars: [wchar_t; 5],
-    pub ext_color: libc::c_int,
-}
 pub type attr_t = chtype;
 pub type chtype = libc::c_uint;
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct pdat {
-    pub _pad_y: libc::c_short,
-    pub _pad_x: libc::c_short,
-    pub _pad_top: libc::c_short,
-    pub _pad_left: libc::c_short,
-    pub _pad_bottom: libc::c_short,
-    pub _pad_right: libc::c_short,
-}
-/*
- *  STFL - The Structured Terminal Forms Language/Library
- *  Copyright (C) 2006, 2007  Clifford Wolf <clifford@clifford.at>
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 3 of the License, or (at your option) any later version.
- *  
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *  
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301 USA
- *
- *  stfl_internals.h: The STFL C header file (Internal STFL APIs)
- */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct stfl_kv {
-    pub next: *mut stfl_kv,
-    pub widget: *mut stfl_widget,
-    pub key: *mut wchar_t,
-    pub value: *mut wchar_t,
-    pub name: *mut wchar_t,
-    pub id: libc::c_int,
-}
 /*
  *  STFL - The Structured Terminal Forms Language/Library
  *  Copyright (C) 2006, 2007  Clifford Wolf <clifford@clifford.at>
