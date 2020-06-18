@@ -1,88 +1,10 @@
 use libc::*;
 use crate::public::*;
-use crate::public::pthread_mutex_t;
+//use crate::public::{pthread_mutex_t, malloc, strdup, strcmp, strlen, realloc, __errno_location, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort};
+use crate::public::{malloc, wcslen, pthread_mutex_init, pthread_mutex_lock, pthread_mutex_unlock, fprintf, __assert_fail, calloc, free, abort};
 
 extern "C" {
-    pub type _IO_wide_data;
-    pub type _IO_codecvt;
-    pub type _IO_marker;
-    pub type ldat;
-    #[no_mangle]
-    fn cbreak() -> c_int;
-    #[no_mangle]
-    fn clearok(_: *mut WINDOW, _: bool) -> c_int;
-    #[no_mangle]
-    fn delwin(_: *mut WINDOW) -> c_int;
-    #[no_mangle]
-    fn doupdate() -> c_int;
-    #[no_mangle]
-    fn endwin() -> c_int;
-    #[no_mangle]
-    fn initscr() -> *mut WINDOW;
-    #[no_mangle]
-    fn keypad(_: *mut WINDOW, _: bool) -> c_int;
-    #[no_mangle]
-    fn newwin(_: c_int, _: c_int, _: c_int, _: c_int)
-     -> *mut WINDOW;
-    #[no_mangle]
-    fn noecho() -> c_int;
-    #[no_mangle]
-    fn nonl() -> c_int;
-    #[no_mangle]
-    fn start_color() -> c_int;
-    #[no_mangle]
-    fn wbkgdset(_: *mut WINDOW, _: chtype);
-    #[no_mangle]
-    fn werase(_: *mut WINDOW) -> c_int;
-    #[no_mangle]
-    fn wmove(_: *mut WINDOW, _: c_int, _: c_int) -> c_int;
-    #[no_mangle]
-    fn wrefresh(_: *mut WINDOW) -> c_int;
-    #[no_mangle]
-    fn wtimeout(_: *mut WINDOW, _: c_int);
-    #[no_mangle]
-    fn use_default_colors() -> c_int;
-    #[no_mangle]
-    fn fprintf(_: *mut FILE, _: *const c_char, _: ...) -> c_int;
-    #[no_mangle]
-    static mut stderr: *mut FILE;
-    #[no_mangle]
-    fn swscanf(__s: *const wchar_t, __format: *const wchar_t, _: ...)
-     -> c_int;
-    #[no_mangle]
-    fn swprintf(__s: *mut wchar_t, __n: size_t, __format: *const wchar_t,
-                _: ...) -> c_int;
-    #[no_mangle]
-    fn wcswidth(__s: *const wchar_t, __n: size_t) -> c_int;
-    #[no_mangle]
-    fn wcwidth(__c: wchar_t) -> c_int;
-    #[no_mangle]
-    fn wmemcpy(__s1: *mut wchar_t, __s2: *const wchar_t, __n: size_t)
-     -> *mut wchar_t;
-    #[no_mangle]
-    fn wcslen(_: *const c_int) -> c_ulong;
-    #[no_mangle]
-    fn wcschr(_: *const c_int, _: c_int) -> *mut c_int;
-    #[no_mangle]
-    fn wcscmp(_: *const c_int, _: *const c_int) -> c_int;
-    #[no_mangle]
-    static mut curscr: *mut WINDOW;
-    #[no_mangle]
-    static mut stdscr: *mut WINDOW;
-    #[no_mangle]
-    fn waddnwstr(_: *mut WINDOW, _: *const wchar_t, _: c_int)
-     -> c_int;
-    #[no_mangle]
-    fn wget_wch(_: *mut WINDOW, _: *mut wint_t) -> c_int;
-    #[no_mangle]
-    fn pthread_mutex_init(__mutex: *mut pthread_mutex_t,
-                          __mutexattr: *const pthread_mutexattr_t)
-     -> c_int;
-    #[no_mangle]
-    fn pthread_mutex_lock(__mutex: *mut pthread_mutex_t) -> c_int;
-    #[no_mangle]
-    fn pthread_mutex_unlock(__mutex: *mut pthread_mutex_t) -> c_int;
-    #[no_mangle]
+   #[no_mangle]
     static mut stfl_colorpair_counter: c_int;
     #[no_mangle]
     static mut stfl_widget_type_checkbox: stfl_widget_type;
@@ -110,21 +32,6 @@ extern "C" {
     fn stfl_style(win: *mut WINDOW, style: *const wchar_t);
     #[no_mangle]
     fn stfl_keyname(ch: wchar_t, isfunckey: c_int) -> *mut wchar_t;
-    #[no_mangle]
-    fn malloc(_: c_ulong) -> *mut c_void;
-    #[no_mangle]
-    fn calloc(_: c_ulong, _: c_ulong) -> *mut c_void;
-    #[no_mangle]
-    fn free(__ptr: *mut c_void);
-    #[no_mangle]
-    fn abort() -> !;
-    #[no_mangle]
-    fn memcpy(_: *mut c_void, _: *const c_void, _: c_ulong)
-     -> *mut c_void;
-    #[no_mangle]
-    fn __assert_fail(__assertion: *const c_char,
-                     __file: *const c_char, __line: c_uint,
-                     __function: *const c_char) -> !;
 }
 pub type size_t = c_ulong;
 pub type wchar_t = c_int;
@@ -177,7 +84,7 @@ unsafe extern "C" fn compat_wcsdup(src: *const wchar_t) -> *mut wchar_t {
                                                                      as
                                                                      c_ulong);
     let dest: *mut wchar_t = malloc(n) as *mut wchar_t;
-    memcpy(dest as *mut c_void, src as *const c_void, n);
+    memcpy(dest as *mut c_void, src as *const c_void, n as _);
     return dest;
 }
 
