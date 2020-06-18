@@ -129,37 +129,6 @@ pub struct pdat {
     pub _pad_bottom: c_short,
     pub _pad_right: c_short,
 }
-/*
- *  STFL - The Structured Terminal Forms Language/Library
- *  Copyright (C) 2006, 2007  Clifford Wolf <clifford@clifford.at>
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 3 of the License, or (at your option) any later version.
- *  
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *  
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- *  MA 02110-1301 USA
- *
- *  stfl_internals.h: The STFL C header file (Internal STFL APIs)
- */
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct stfl_kv {
-    pub next: *mut stfl_kv,
-    pub widget: *mut stfl_widget,
-    pub key: *mut wchar_t,
-    pub value: *mut wchar_t,
-    pub name: *mut wchar_t,
-    pub id: c_int,
-}
 pub type C2RustUnnamed_0 = c_uint;
 pub const DOUBLE_QUOTE_NAME: C2RustUnnamed_0 = 5;
 pub const DOUBLE_QUOTE: C2RustUnnamed_0 = 4;
